@@ -213,11 +213,6 @@ struct RegisterView: View {
                 password: password
             )
 
-            // Firebase automatically signs the user in
-            // after successful registration.
-
-            appState.isAuthenticated = true
-
         } catch {
 
             errorMessage = firebaseErrorMessage(error)
