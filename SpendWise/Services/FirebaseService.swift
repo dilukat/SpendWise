@@ -56,7 +56,7 @@ final class FirebaseService {
 
     // MARK: - Current User
 
-    var currentUser: User? {
+    var currentUser: FirebaseAuth.User? {
 
         Auth.auth().currentUser
     }
