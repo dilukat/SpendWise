@@ -22,6 +22,10 @@ struct HomeView: View {
 
                 Text("SpendWise Dashboard")
                     .foregroundStyle(Color.spendWiseSecondaryText)
+                
+                NavigationLink("Add Expense") {
+                    AddExpenseView()
+                }
 
                 Spacer()
             }
