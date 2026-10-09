@@ -18,6 +18,7 @@ final class ExpenseViewModel: ObservableObject {
 
     @Published var errorMessage = ""
     @Published var showSuccessMessage = false
+    @Published var expenses: [Expense] = []
 
     let categories = [
         "Food",
@@ -28,6 +29,10 @@ final class ExpenseViewModel: ObservableObject {
         "Health",
         "Other"
     ]
+    
+    init() {
+        fetchExpenses()
+    }
 
     func saveExpense() {
 
@@ -58,7 +63,35 @@ final class ExpenseViewModel: ObservableObject {
 
         errorMessage = ""
         showSuccessMessage = true
+        fetchExpenses()
 
         print("Expense saved successfully.")
+    }
+    
+    func fetchExpenses() {
+
+        let context = CoreDataService.shared.viewContext
+
+        let request = Expense.fetchRequest()
+
+        request.sortDescriptors = [
+            NSSortDescriptor(
+                key: "date",
+                ascending: false
+            )
+        ]
+
+        do {
+
+            expenses = try context.fetch(request)
+
+            print("Fetched \(expenses.count) expenses.")
+
+        } catch {
+
+            print(
+                "Core Data fetch error: \(error.localizedDescription)"
+            )
+        }
     }
 }
