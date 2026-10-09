@@ -30,7 +30,7 @@ struct LoginView: View {
 
                 VStack(spacing: 24) {
 
-                    // MARK: - Header
+                    // Header
 
                     VStack(spacing: 8) {
 
@@ -49,7 +49,7 @@ struct LoginView: View {
                     }
                     .padding(.top, 40)
 
-                    // MARK: - Login Fields
+                    // Login Fields
 
                     VStack(spacing: 16) {
 
@@ -63,7 +63,7 @@ struct LoginView: View {
                             .textFieldStyle(.roundedBorder)
                     }
 
-                    // MARK: - Error Message
+                    // Error Message
 
                     if !errorMessage.isEmpty {
 
@@ -76,7 +76,7 @@ struct LoginView: View {
                             )
                     }
 
-                    // MARK: - Sign In Button
+                    // Sign In Button
 
                     Button {
 
@@ -110,7 +110,7 @@ struct LoginView: View {
                     )
                     .disabled(isLoading)
 
-                    // MARK: - Create Account
+                    // Create Account
 
                     Button {
 
@@ -148,7 +148,7 @@ struct LoginView: View {
         }
     }
 
-    // MARK: - Login
+    // Login
 
     private func loginUser() async {
 
@@ -192,7 +192,7 @@ struct LoginView: View {
         isLoading = false
     }
 
-    // MARK: - Firebase Error Messages
+    // Firebase Error Messages
 
     private func firebaseErrorMessage(
         _ error: Error

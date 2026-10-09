@@ -11,27 +11,55 @@ import SwiftUI
 struct HistoryView: View {
 
     @StateObject private var viewModel = ExpenseViewModel()
+    @State private var searchText = ""
+    @State private var selectedCategory = "All"
 
     var body: some View {
 
         NavigationStack {
             VStack {
-                if viewModel.expenses.isEmpty {
+                
+                HStack {
+                    Text("Category")
+                        .font(.subheadline)
+                        .foregroundColor(Color.spendWiseSecondaryText)
+
+                    Spacer()
+
+                    Picker("Category", selection: $selectedCategory) {
+                        Text("All Categories")
+                            .tag("All")
+
+                        ForEach(viewModel.categories, id: \.self) { category in
+                            Text(category)
+                                .tag(category)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                
+                if filteredExpenses.isEmpty {
 
                     VStack(spacing: 12) {
                         Image(systemName: "tray")
                             .font(.system(size: 45))
                             .foregroundColor(Color.spendWiseSecondaryText)
 
-                        Text("No Expenses Yet")
+                        Text(searchText.isEmpty ? "No Expenses Yet" : "No Matching Expenses")
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundColor(Color.spendWiseText)
 
-                        Text("Your saved expenses will appear here.")
-                            .font(.subheadline)
-                            .foregroundColor(Color.spendWiseSecondaryText)
-                            .multilineTextAlignment(.center)
+                        Text(
+                            searchText.isEmpty
+                                ? "Your saved expenses will appear here."
+                                : "Try another category or merchant name."
+                        )
+                        .font(.subheadline)
+                        .foregroundColor(Color.spendWiseSecondaryText)
+                        .multilineTextAlignment(.center)
                     }
                     .padding()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -90,6 +118,10 @@ struct HistoryView: View {
             }
             .background(Color.spendWiseBackground)
             .navigationTitle("History")
+            .searchable(
+                text: $searchText,
+                prompt: "Search category or merchant"
+            )
             .onAppear {
                 viewModel.fetchExpenses()
             }
@@ -97,9 +129,31 @@ struct HistoryView: View {
     }
     
     
+    
+    
+    private var filteredExpenses: [Expense] {
+        let query = searchText.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        return viewModel.expenses.filter { expense in
+            let category = expense.category ?? ""
+            let merchant = expense.merchant ?? ""
+
+            let matchesSearch = query.isEmpty
+                || category.localizedCaseInsensitiveContains(query)
+                || merchant.localizedCaseInsensitiveContains(query)
+
+            let matchesCategory = selectedCategory == "All"
+                || category.caseInsensitiveCompare(selectedCategory) == .orderedSame
+
+            return matchesSearch && matchesCategory
+        }
+    }
+
     private var groupedExpenses: [Date: [Expense]] {
 
-        Dictionary(grouping: viewModel.expenses) { expense in
+        Dictionary(grouping: filteredExpenses) { expense in
 
             Calendar.current.startOfDay(
                 for: expense.date ?? Date()

@@ -15,7 +15,7 @@ final class FirebaseService {
 
     private init() {}
 
-    // MARK: - Register
+    // Register
 
     func register(
         fullName: String,
@@ -34,7 +34,7 @@ final class FirebaseService {
         try await changeRequest.commitChanges()
     }
 
-    // MARK: - Login
+    // Login
 
     func login(
         email: String,
@@ -47,21 +47,21 @@ final class FirebaseService {
         )
     }
 
-    // MARK: - Logout
+    // Logout
 
     func logout() throws {
 
         try Auth.auth().signOut()
     }
 
-    // MARK: - Current User
+    // Current User
 
     var currentUser: FirebaseAuth.User? {
 
         Auth.auth().currentUser
     }
 
-    // MARK: - Authentication State
+    // Authentication State
 
     var isAuthenticated: Bool {
 
