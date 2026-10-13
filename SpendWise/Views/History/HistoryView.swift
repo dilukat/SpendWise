@@ -13,6 +13,7 @@ struct HistoryView: View {
     @StateObject private var viewModel = ExpenseViewModel()
     @State private var searchText = ""
     @State private var selectedCategory = "All"
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
 
@@ -72,38 +73,47 @@ struct HistoryView: View {
 
                             Section {
                                 ForEach(groupedExpenses[day] ?? [], id: \.objectID) { expense in
+                                    
+                                    
+                                    NavigationLink {
+                                        ExpenseDetailView(expense: expense)
+                                    } label: {
+                                        HStack {
+                                            HStack(spacing: 14) {
 
-                                    HStack(spacing: 14) {
+                                                Image(systemName: "arrow.down.circle.fill")
+                                                    .font(.title2)
+                                                    .foregroundColor(Color.spendWiseTeal)
 
-                                        Image(systemName: "arrow.down.circle.fill")
-                                            .font(.title2)
-                                            .foregroundColor(Color.spendWiseTeal)
+                                                VStack(alignment: .leading, spacing: 4) {
 
-                                        VStack(alignment: .leading, spacing: 4) {
+                                                    Text(expense.category ?? "Other")
+                                                        .font(.headline)
+                                                        .foregroundColor(Color.spendWiseText)
 
-                                            Text(expense.category ?? "Other")
-                                                .font(.headline)
-                                                .foregroundColor(Color.spendWiseText)
+                                                    if let merchant = expense.merchant,
+                                                       !merchant.isEmpty {
+                                                        Text(merchant)
+                                                            .font(.subheadline)
+                                                            .foregroundColor(Color.spendWiseSecondaryText)
+                                                    }
 
-                                            if let merchant = expense.merchant,
-                                               !merchant.isEmpty {
-                                                Text(merchant)
-                                                    .font(.subheadline)
-                                                    .foregroundColor(Color.spendWiseSecondaryText)
+                                                    Text(expense.date ?? Date(), style: .time)
+                                                        .font(.caption)
+                                                        .foregroundColor(Color.spendWiseSecondaryText)
+                                                }
+
+                                                Spacer()
+
+                                                Text("Rs. \(expense.amount, specifier: "%.2f")")
+                                                    .font(.headline)
+                                                    .foregroundColor(Color.spendWiseText)
                                             }
-
-                                            Text(expense.date ?? Date(), style: .time)
-                                                .font(.caption)
-                                                .foregroundColor(Color.spendWiseSecondaryText)
+                                            .padding(.vertical, 6)
                                         }
-
-                                        Spacer()
-
-                                        Text("Rs. \(expense.amount, specifier: "%.2f")")
-                                            .font(.headline)
-                                            .foregroundColor(Color.spendWiseText)
                                     }
-                                    .padding(.vertical, 6)
+                                    .buttonStyle(.plain)
+                                    
                                 }
                             } header: {
                                 Text(day, format: .dateTime.weekday(.wide).month().day())
@@ -124,6 +134,18 @@ struct HistoryView: View {
             )
             .onAppear {
                 viewModel.fetchExpenses()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: Notification.Name("ExpenseDidChange")
+                )
+            ) { _ in
+                viewModel.fetchExpenses()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    viewModel.fetchExpenses()
+                }
             }
         }
     }

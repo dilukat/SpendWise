@@ -68,6 +68,18 @@ final class ExpenseViewModel: ObservableObject {
         print("Expense saved successfully.")
     }
     
+    
+    func deleteExpense(_ expense: Expense) {
+        let context = CoreDataService.shared.viewContext
+
+        context.delete(expense)
+        CoreDataService.shared.saveContext()
+
+        fetchExpenses()
+
+        print("Expense deleted successfully.")
+    }
+    
     func fetchExpenses() {
 
         let context = CoreDataService.shared.viewContext
