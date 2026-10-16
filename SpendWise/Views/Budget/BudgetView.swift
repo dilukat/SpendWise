@@ -111,7 +111,13 @@ struct BudgetView: View {
                            }
 
                            ProgressView(value: progress)
-                               .tint(remaining < 0 ? Color.spendWiseDanger : Color.spendWiseTeal)
+                               .tint(
+                                   remaining < 0
+                                       ? Color.spendWiseDanger
+                                       : progress >= 0.8
+                                           ? Color.spendWiseWarning
+                                           : Color.spendWiseTeal
+                               )
                        }
 
                        HStack {
@@ -248,9 +254,13 @@ struct BudgetView: View {
 
                                if limit > 0 {
                                    ProgressView(value: progress)
-                                       .tint(spent > limit
-                                             ? Color.spendWiseDanger
-                                             : Color.spendWiseTeal)
+                                       .tint(
+                                           spent > limit
+                                               ? Color.spendWiseDanger
+                                               : progress >= 0.8
+                                                   ? Color.spendWiseWarning
+                                                   : Color.spendWiseTeal
+                                       )
 
                                    HStack {
                                        Text("Limit: \(limit, format: .currency(code: "LKR"))")
@@ -258,13 +268,17 @@ struct BudgetView: View {
 
                                        Text(
                                            spent > limit
-                                           ? "Over budget • \(percentage)% used"
-                                           : "\(percentage)% used"
+                                               ? "Over budget • \(percentage)% used"
+                                               : progress >= 0.8
+                                                   ? "Warning • \(percentage)% used"
+                                                   : "\(percentage)% used"
                                        )
                                        .foregroundColor(
                                            spent > limit
-                                           ? Color.spendWiseDanger
-                                           : Color.spendWiseSecondaryText
+                                               ? Color.spendWiseDanger
+                                               : progress >= 0.8
+                                                   ? Color.spendWiseWarning
+                                                   : Color.spendWiseSecondaryText
                                        )
                                    }
                                    .font(.caption)
