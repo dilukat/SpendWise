@@ -136,6 +136,12 @@ struct AddExpenseView: View {
                 Button {
 
                     viewModel.saveExpense()
+                    
+                    NotificationCenter.default.post(
+                        name: Notification.Name("ExpenseDidChange"),
+                        object: nil
+                    )
+                    
 
                 } label: {
 
@@ -168,6 +174,7 @@ struct AddExpenseView: View {
 
             Text("Your expense was saved successfully.")
         }
+        
     }
 }
 
