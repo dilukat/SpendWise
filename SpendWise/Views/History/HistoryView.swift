@@ -77,6 +77,9 @@ struct HistoryView: View {
                                     
                                     NavigationLink {
                                         ExpenseDetailView(expense: expense)
+                                            .onDisappear {
+                                                viewModel.fetchExpenses()
+                                            }
                                     } label: {
                                         HStack {
                                             HStack(spacing: 14) {
