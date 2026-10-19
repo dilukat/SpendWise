@@ -1,0 +1,82 @@
+{
+  "activityEntities" : [
+
+  ],
+  "createdDate" : "2026-10-19T07:20:42Z",
+  "dataPathRelativeToProjectURL" : "../ML/SpendingTestingData.csv/",
+  "dataResult" : {
+    "columnTypes" : [
+      "Int",
+      "Int",
+      "Int",
+      "Int",
+      "Int",
+      "Int"
+    ],
+    "columnValues" : [
+      "10, 15, 20, 25, 10, 15, 20, 25",
+      "30, 30, 30, 30, 31, 31, 31, 31",
+      "18,000, 28,000, 39,000, 46,000, 16,000, 32,000, 44,000, 58,000",
+      "50,000, 50,000, 50,000, 50,000, 60,000, 60,000, 60,000, 60,000",
+      "48,000, 48,000, 48,000, 48,000, 55,000, 55,000, 55,000, 55,000",
+      "52,000, 55,000, 58,000, 60,000, 62,000, 65,000, 68,000, 70,000"
+    ],
+    "columns" : [
+      "daysElapsed",
+      "daysInMonth",
+      "spendingSoFar",
+      "previousMonthSpending",
+      "twoMonthsAgoSpending",
+      "actualMonthlyTotal"
+    ],
+    "createdDate" : "2026-10-19T07:20:42Z",
+    "dataAnalysis" : {
+      "classifierAnalysis" : {
+
+      },
+      "issues" : [
+        {
+          "description" : "No target selected",
+          "severity" : "notReady"
+        },
+        {
+          "description" : "Data has 8 rows",
+          "severity" : "info"
+        },
+        {
+          "description" : "No features selected",
+          "severity" : "notReady"
+        }
+      ],
+      "objectDetectorAnalysis" : {
+        "details" : {
+
+        }
+      },
+      "summary" : {
+        "canUseValidation" : 0,
+        "sampleCount" : 8
+      }
+    },
+    "dataSourceID" : "F8429AA9-44BF-4D04-8A92-6B248EA36157",
+    "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTestingData.csv",
+    "error" : {
+      "code" : 1000,
+      "domain" : "composer.error.domain",
+      "errorType" : "notReady",
+      "reason" : "No target selected"
+    },
+    "itemsCount" : 8
+  },
+  "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTestingData.csv",
+  "experimentIDs" : [
+    "B07FD064-4404-4F61-B639-D3DB0CE4BEEB",
+    "1DE2CC0C-1041-49E1-9998-71EF06140AC5"
+  ],
+  "id" : "F8429AA9-44BF-4D04-8A92-6B248EA36157",
+  "modifiedDate" : "2026-10-19T07:58:52Z",
+  "pathType" : 0,
+  "preferredFilename" : "SpendingTestingData.csv",
+  "title" : "SpendingTestingData.csv",
+  "version" : "1.0"
+}

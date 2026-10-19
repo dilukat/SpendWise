@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2026-10-19T05:49:41Z",
+        "event" : "projectCreated",
+        "id" : "3E582EF5-9A22-462E-998B-1421948FB130",
+        "subtitle" : "SpendingPredictionModel",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Theekshana",
+  "createdDate" : "2026-10-19T05:49:41Z",
+  "description" : "",
+  "id" : "4E341170-5BE4-4466-B614-B7F3BFD922EB",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2026-10-19T05:49:41Z",
+  "projectName" : "SpendingPredictionModel",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "generalRegresor",
+  "title" : "Tabular Regression",
+  "version" : "1.1"
+}

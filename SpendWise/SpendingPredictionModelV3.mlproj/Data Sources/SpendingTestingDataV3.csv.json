@@ -1,0 +1,22 @@
+{
+  "activityEntities" : [
+
+  ],
+  "createdDate" : "2026-10-19T10:50:55Z",
+  "dataPathRelativeToProjectURL" : "../ML/SpendingTestingDataV3.csv/",
+  "dataResult" : {
+    "createdDate" : "2026-10-19T10:50:55Z",
+    "dataSourceID" : "B7F36B44-0270-4133-B4F3-EBE5312A1721",
+    "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTestingDataV3.csv"
+  },
+  "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTestingDataV3.csv",
+  "experimentIDs" : [
+    "9C7F1101-8B8D-4CFE-AC61-A7C0ED611B71"
+  ],
+  "id" : "B7F36B44-0270-4133-B4F3-EBE5312A1721",
+  "modifiedDate" : "2026-10-19T10:50:55Z",
+  "pathType" : 0,
+  "preferredFilename" : "SpendingTestingDataV3.csv",
+  "title" : "SpendingTestingDataV3.csv",
+  "version" : "1.0"
+}

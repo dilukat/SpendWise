@@ -1,0 +1,41 @@
+{
+  "activityEntities" : [
+    "dataSourceTrainingStarted",
+    [
+      {
+        "createdDate" : "2026-10-19T07:57:48Z",
+        "event" : "dataSourceTrainingStarted",
+        "id" : "A6A0B3CC-50F1-4F35-92A9-BC6BDF154B2B",
+        "subtitle" : "SpendingPredictionModel 2",
+        "title" : "Used By"
+      }
+    ],
+    "dataSourceMetrics",
+    [
+      {
+        "createdDate" : "2026-10-19T07:57:48Z",
+        "event" : "dataSourceMetrics",
+        "id" : "8F272400-1F6A-4330-A775-353CA35BBAB7",
+        "subtitle" : "48 Items",
+        "title" : "Data Summary"
+      }
+    ]
+  ],
+  "createdDate" : "2026-10-19T07:48:49Z",
+  "dataPathRelativeToProjectURL" : "../ML/SpendingTrainingDataV2.csv/",
+  "dataResult" : {
+    "createdDate" : "2026-10-19T07:48:49Z",
+    "dataSourceID" : "762F550D-6858-4939-9096-FD4A9F7B23FA",
+    "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTrainingDataV2.csv"
+  },
+  "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTrainingDataV2.csv",
+  "experimentIDs" : [
+    "1DE2CC0C-1041-49E1-9998-71EF06140AC5"
+  ],
+  "id" : "762F550D-6858-4939-9096-FD4A9F7B23FA",
+  "modifiedDate" : "2026-10-19T07:57:48Z",
+  "pathType" : 0,
+  "preferredFilename" : "SpendingTrainingDataV2.csv",
+  "title" : "SpendingTrainingDataV2.csv",
+  "version" : "1.0"
+}

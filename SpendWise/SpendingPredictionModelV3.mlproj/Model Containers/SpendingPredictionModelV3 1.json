@@ -1,0 +1,390 @@
+{
+  "activityEntities" : [
+    "trainingFinished",
+    [
+      {
+        "createdDate" : "2026-10-19T10:45:14Z",
+        "event" : "trainingFinished",
+        "id" : "0C43E942-7D56-4547-9716-98DE6578AA97",
+        "subtitle" : "SpendingPredictionModelV3 1",
+        "title" : "Training Completed"
+      }
+    ],
+    "trainingDataAdded",
+    [
+      {
+        "createdDate" : "2026-10-19T10:43:57Z",
+        "event" : "trainingDataAdded",
+        "id" : "DAC5B7A0-626B-4E38-9536-C1E73607A524",
+        "subtitle" : "SpendingTrainingDataV3.csv",
+        "title" : "Training Data Added"
+      }
+    ],
+    "evaluationStarted",
+    [
+      {
+        "createdDate" : "2026-10-19T10:51:22Z",
+        "event" : "evaluationStarted",
+        "id" : "46688133-F1AB-4925-BC0F-96D06ECE4000",
+        "subtitle" : "SpendingPredictionModelV3 1",
+        "title" : "Testing Started"
+      }
+    ],
+    "trainingStarted",
+    [
+      {
+        "createdDate" : "2026-10-19T10:45:14Z",
+        "event" : "trainingStarted",
+        "id" : "D80EB0CA-9E8E-4520-9BEA-90BB8CBCF243",
+        "subtitle" : "SpendingPredictionModelV3 1",
+        "title" : "Training Started"
+      }
+    ],
+    "evaluationFinished",
+    [
+      {
+        "createdDate" : "2026-10-19T10:51:22Z",
+        "event" : "evaluationFinished",
+        "id" : "8D220A21-37C7-443C-8674-F8DB22C6AFAD",
+        "subtitle" : "SpendingPredictionModelV3 1",
+        "title" : "Testing Completed"
+      }
+    ],
+    "experimentCreated",
+    [
+      {
+        "createdDate" : "2026-10-19T10:43:28Z",
+        "event" : "experimentCreated",
+        "id" : "68128E18-B575-4ACD-B8EB-920486C2AC37",
+        "subtitle" : "SpendingPredictionModelV3 1",
+        "title" : "Model Source Created"
+      }
+    ],
+    "evaluationDataAdded",
+    [
+      {
+        "createdDate" : "2026-10-19T10:50:55Z",
+        "event" : "evaluationDataAdded",
+        "id" : "D054781D-5CC3-4685-A59C-21659B084A8F",
+        "subtitle" : "SpendingTestingDataV3.csv",
+        "title" : "Testing Data Added"
+      }
+    ]
+  ],
+  "contentDataResult" : {
+    "createdDate" : "2026-10-19T10:43:57Z"
+  },
+  "createdDate" : "2026-10-19T10:43:28Z",
+  "evaluationContainerEntity" : {
+    "createdDate" : "2026-10-19T10:51:22Z",
+    "evaluationEntities" : [
+      {
+        "accuracy" : 178.08430698212678,
+        "analysedDataType" : "datasource",
+        "createdDate" : "2026-10-19T10:45:14Z",
+        "dataResult" : {
+          "columnTypes" : [
+            "Int",
+            "Int",
+            "Int",
+            "Int",
+            "Int",
+            "Int"
+          ],
+          "columnValues" : [
+            "10, 20, 25, 10, 20, 15, 25, 10, 20, 15, 25, 10, 20",
+            "30, 30, 31, 30, 30, 31, 31, 30, 30, 31, 31, 30, 30",
+            "10,000, 20,000, 20,000, 9,000, 19,000, 21,000, 35,000, 18,000, 34,000, 36,000, 60,000, 4,000, 8,000",
+            "0, 0, 0, 15,000, 15,000, 25,000, 25,000, 40,000, 40,000, 60,000, 60,000, 8,000, 8,000",
+            "0, 0, 0, 18,000, 18,000, 22,000, 22,000, 42,000, 42,000, 55,000, 55,000, 10,000, 10,000",
+            "30,000, 30,000, 24,800, 28,000, 28,000, 45,000, 45,000, 50,000, 50,000, 70,000, 70,000, 12,000, 12,000"
+          ],
+          "columns" : [
+            "daysElapsed",
+            "daysInMonth",
+            "spendingSoFar",
+            "previousMonthSpending",
+            "twoMonthsAgoSpending",
+            "actualMonthlyTotal"
+          ],
+          "createdDate" : "2026-10-19T10:50:55Z",
+          "dataAnalysis" : {
+            "classifierAnalysis" : {
+
+            },
+            "issues" : [
+              {
+                "description" : "Data has 13 rows",
+                "severity" : "info"
+              }
+            ],
+            "objectDetectorAnalysis" : {
+              "details" : {
+
+              }
+            },
+            "summary" : {
+              "canUseValidation" : 0,
+              "maximum" : 70000,
+              "minimum" : 12000,
+              "sampleCount" : 13
+            }
+          },
+          "dataSourceID" : "B7F36B44-0270-4133-B4F3-EBE5312A1721",
+          "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTestingDataV3.csv",
+          "itemsCount" : 13
+        },
+        "dataSourceID" : "B7F36B44-0270-4133-B4F3-EBE5312A1721",
+        "evaluationResult" : {
+          "generalRegressor" : {
+            "maximumError" : 638.1120353490114,
+            "rootMeanSquaredError" : 178.08430698212678
+          }
+        },
+        "finishTime" : "2026-10-19T10:51:22Z",
+        "id" : "b79ec97a-d167-4cb5-9db4-e279f3feffbe",
+        "startTime" : "2026-10-19T10:51:22Z"
+      }
+    ],
+    "id" : "c0467fc8-e857-4a06-886f-7a411742528a",
+    "modifiedDate" : "2026-10-19T10:51:22Z",
+    "previewType" : "tabularRegressor",
+    "testingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2026-10-19T10:43:28Z",
+      "dataResult" : {
+        "createdDate" : "2026-10-19T10:43:57Z"
+      },
+      "id" : "ec408f08-716e-4fc9-aa21-5caf0b3baeef"
+    },
+    "trainingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2026-10-19T10:43:28Z",
+      "dataResult" : {
+        "createdDate" : "2026-10-19T10:43:57Z",
+        "dataAnalysis" : {
+          "classifierAnalysis" : {
+
+          },
+          "issues" : [
+            {
+              "description" : "Data has 40 rows",
+              "severity" : "info"
+            }
+          ],
+          "objectDetectorAnalysis" : {
+            "details" : {
+
+            }
+          },
+          "summary" : {
+            "canUseValidation" : 0,
+            "maximum" : 90000,
+            "minimum" : 12000,
+            "sampleCount" : 40
+          }
+        },
+        "dataSourceID" : "ABA9D1D8-3180-407D-A8A2-EBA2AE6F8E2B",
+        "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTrainingDataV3.csv",
+        "itemsCount" : 40
+      },
+      "dataSourceID" : "ABA9D1D8-3180-407D-A8A2-EBA2AE6F8E2B",
+      "evaluationResult" : {
+        "generalRegressor" : {
+          "maximumError" : 103.23046875,
+          "rootMeanSquaredError" : 35.39435171005465
+        }
+      },
+      "id" : "789dcd4b-203a-443f-8865-bfb9c87835c9"
+    },
+    "validationEvaluationEntity" : {
+      "analysedDataType" : "auto",
+      "createdDate" : "2026-10-19T10:43:28Z",
+      "dataResult" : {
+        "createdDate" : "2026-10-19T10:43:57Z"
+      },
+      "evaluationResult" : {
+        "generalRegressor" : {
+          "maximumError" : 3127.36328125,
+          "rootMeanSquaredError" : 1746.1727292352873
+        }
+      },
+      "id" : "74f5133a-8c0a-473d-a342-4b285f4b5da6"
+    }
+  },
+  "evaluationEntity" : {
+    "analysedDataType" : "none",
+    "dataResult" : {
+
+    },
+    "id" : "ff4b7a26-3519-49d0-9236-a3708376d866"
+  },
+  "evaluationState" : "evaluated",
+  "id" : "9C7F1101-8B8D-4CFE-AC61-A7C0ED611B71",
+  "modelEntity" : {
+    "createdDate" : "2026-10-19T10:43:28Z",
+    "experimentID" : "9C7F1101-8B8D-4CFE-AC61-A7C0ED611B71",
+    "id" : "AC4FDA02-7FA9-464C-8A04-364EFEBDA7CD",
+    "modelURL" : "Models/SpendingPredictionModelV3%201.mlmodel",
+    "modifiedDate" : "2026-10-19T10:43:28Z",
+    "title" : "",
+    "version" : "1.0"
+  },
+  "modifiedDate" : "2026-10-19T10:51:22Z",
+  "preferredFilename" : "SpendingPredictionModelV3 1",
+  "settingEntity" : {
+    "algorithmType" : "maxEnt",
+    "augmentations" : [
+
+    ],
+    "featureNames" : [
+      "daysElapsed",
+      "daysInMonth",
+      "spendingSoFar",
+      "previousMonthSpending",
+      "twoMonthsAgoSpending"
+    ],
+    "generalRegressorType" : {
+      "auto" : {
+
+      }
+    },
+    "handActionClassifierAugmentations" : [
+
+    ],
+    "handPoseClassifierAugmentations" : [
+
+    ],
+    "harVideoAugmentations" : 0,
+    "seedType" : "default",
+    "styleTransferAlgorithmType" : "image",
+    "suggestedColumnTypes" : [
+      "Int",
+      "Int",
+      "Int",
+      "Int",
+      "Int",
+      "Int"
+    ],
+    "suggestedColumnValues" : [
+      "5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25",
+      "30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31",
+      "5,000, 10,000, 15,000, 20,000, 25,000, 4,000, 8,000, 12,000, 16,000, 20,000, 4,000, 9,000, 14,000, 19,000, 23,000, 7,000, 14,000, 21,000, 28,000, 35,000, 10,000, 18,000, 26,000, 34,000, 42,000, 12,000, 24,000, 36,000, 48,000, 60,000",
+      "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15,000, 15,000, 15,000, 15,000, 15,000, 25,000, 25,000, 25,000, 25,000, 25,000, 40,000, 40,000, 40,000, 40,000, 40,000, 60,000, 60,000, 60,000, 60,000, 60,000",
+      "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,000, 18,000, 18,000, 18,000, 18,000, 22,000, 22,000, 22,000, 22,000, 22,000, 42,000, 42,000, 42,000, 42,000, 42,000, 55,000, 55,000, 55,000, 55,000, 55,000",
+      "30,000, 30,000, 30,000, 30,000, 30,000, 24,800, 24,800, 24,800, 24,800, 24,800, 28,000, 28,000, 28,000, 28,000, 28,000, 45,000, 45,000, 45,000, 45,000, 45,000, 50,000, 50,000, 50,000, 50,000, 50,000, 70,000, 70,000, 70,000, 70,000, 70,000"
+    ],
+    "suggestedColumns" : [
+      "daysElapsed",
+      "daysInMonth",
+      "spendingSoFar",
+      "previousMonthSpending",
+      "twoMonthsAgoSpending",
+      "actualMonthlyTotal"
+    ],
+    "targetColumn" : "actualMonthlyTotal",
+    "taskType" : "generalRegresor",
+    "transferLearningEmbeddingType" : "dynamic"
+  },
+  "snapshotRole" : {
+    "withoutSnapshots" : 0
+  },
+  "state" : "trained",
+  "title" : "SpendingPredictionModelV3 1",
+  "trainingEntity" : {
+    "analysedDataType" : "datasource",
+    "checkpointMetrics" : {
+
+    },
+    "dataResult" : {
+      "columnTypes" : [
+        "Int",
+        "Int",
+        "Int",
+        "Int",
+        "Int",
+        "Int"
+      ],
+      "columnValues" : [
+        "5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25, 5, 10, 15, 20, 25",
+        "30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31",
+        "5,000, 10,000, 15,000, 20,000, 25,000, 4,000, 8,000, 12,000, 16,000, 20,000, 4,000, 9,000, 14,000, 19,000, 23,000, 7,000, 14,000, 21,000, 28,000, 35,000, 10,000, 18,000, 26,000, 34,000, 42,000, 12,000, 24,000, 36,000, 48,000, 60,000",
+        "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15,000, 15,000, 15,000, 15,000, 15,000, 25,000, 25,000, 25,000, 25,000, 25,000, 40,000, 40,000, 40,000, 40,000, 40,000, 60,000, 60,000, 60,000, 60,000, 60,000",
+        "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,000, 18,000, 18,000, 18,000, 18,000, 22,000, 22,000, 22,000, 22,000, 22,000, 42,000, 42,000, 42,000, 42,000, 42,000, 55,000, 55,000, 55,000, 55,000, 55,000",
+        "30,000, 30,000, 30,000, 30,000, 30,000, 24,800, 24,800, 24,800, 24,800, 24,800, 28,000, 28,000, 28,000, 28,000, 28,000, 45,000, 45,000, 45,000, 45,000, 45,000, 50,000, 50,000, 50,000, 50,000, 50,000, 70,000, 70,000, 70,000, 70,000, 70,000"
+      ],
+      "columns" : [
+        "daysElapsed",
+        "daysInMonth",
+        "spendingSoFar",
+        "previousMonthSpending",
+        "twoMonthsAgoSpending",
+        "actualMonthlyTotal"
+      ],
+      "createdDate" : "2026-10-19T10:43:57Z",
+      "dataAnalysis" : {
+        "classifierAnalysis" : {
+
+        },
+        "issues" : [
+          {
+            "description" : "Data has 40 rows",
+            "severity" : "info"
+          }
+        ],
+        "objectDetectorAnalysis" : {
+          "details" : {
+
+          }
+        },
+        "summary" : {
+          "canUseValidation" : 0,
+          "maximum" : 90000,
+          "minimum" : 12000,
+          "sampleCount" : 40
+        }
+      },
+      "dataSourceID" : "ABA9D1D8-3180-407D-A8A2-EBA2AE6F8E2B",
+      "dataURL" : "file:///Users/theekshana/dev/SpendWise/SpendWise/ML/SpendingTrainingDataV3.csv",
+      "itemsCount" : 40
+    },
+    "dataSourceID" : "ABA9D1D8-3180-407D-A8A2-EBA2AE6F8E2B",
+    "featureExtractionCheckpointMayBeAvailable" : false,
+    "finishTime" : "2026-10-19T10:45:14Z",
+    "progress" : [
+
+    ],
+    "snapshottableCheckpoints" : {
+
+    },
+    "startTime" : "2026-10-19T10:45:14Z",
+    "trainingAccuracy" : 35.39435171005465,
+    "trainingResults" : {
+      "generalRegressor" : {
+        "maximumError" : 103.23046875,
+        "rootMeanSquaredError" : 35.39435171005465
+      }
+    },
+    "validationAccuracy" : 1746.1727292352873,
+    "validationResults" : {
+      "generalRegressor" : {
+        "maximumError" : 3127.36328125,
+        "rootMeanSquaredError" : 1746.1727292352873
+      }
+    }
+  },
+  "validationEntity" : {
+    "analysedDataType" : "auto",
+    "dataResult" : {
+      "createdDate" : "2026-10-19T10:43:57Z"
+    },
+    "splitOptions" : {
+      "strategy" : {
+        "automatic" : {
+
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

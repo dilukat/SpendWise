@@ -18,6 +18,8 @@ private struct CategoryBudgetSummary: Identifiable {
 }
 
 struct HomeView: View {
+    
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var totalSpending: Double = 0
     @State private var monthlyBudget: Double = 0
@@ -25,6 +27,7 @@ struct HomeView: View {
     @State private var recentExpenses: [Expense] = []
     @State private var categoryBudgetSummaries: [CategoryBudgetSummary] = []
     @State private var categorySpending: [String: Double] = [:]
+    @State private var predictedMonthlySpending: Double?
 
     private var remainingBudget: Double {
         monthlyBudget - totalSpending
@@ -152,23 +155,112 @@ struct HomeView: View {
                                     : Color.spendWiseTeal
                             )
 
+                        
                         if monthlyBudget <= 0 {
-                            Text("Set a monthly budget to track your progress.")
-                                .font(.footnote)
-                                .foregroundColor(
-                                    Color.spendWiseSecondaryText
-                                )
+                            Label(
+                                "Set a monthly budget to track your spending.",
+                                systemImage: "info.circle"
+                            )
+                            .font(.footnote)
+                            .foregroundColor(Color.spendWiseSecondaryText)
+
                         } else if totalSpending > monthlyBudget {
-                            Text("You have exceeded your monthly budget.")
-                                .font(.footnote)
-                                .foregroundColor(Color.spendWiseDanger)
+                            Label(
+                                "You've exceeded your monthly budget.",
+                                systemImage: "exclamationmark.triangle.fill"
+                            )
+                            .font(.footnote)
+                            .foregroundColor(Color.spendWiseDanger)
+
+                        } else if totalSpending == monthlyBudget {
+                            Label(
+                                "You've reached your monthly budget.",
+                                systemImage: "exclamationmark.circle.fill"
+                            )
+                            .font(.footnote)
+                            .foregroundColor(Color.spendWiseWarning)
+
                         } else if progress >= 0.8 {
-                            Text("You have used 80% or more of your budget.")
-                                .font(.footnote)
-                                .foregroundColor(Color.spendWiseWarning)
+                            Label(
+                                "You've used 80% or more of your budget.",
+                                systemImage: "exclamationmark.circle.fill"
+                            )
+                            .font(.footnote)
+                            .foregroundColor(Color.spendWiseWarning)
+
+                        } else {
+                            Label(
+                                "You're within your monthly budget.",
+                                systemImage: "checkmark.circle.fill"
+                            )
+                            .font(.footnote)
+                            .foregroundColor(Color.spendWiseSuccess)
                         }
+
                     }
                     .foregroundColor(Color.spendWiseText)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.spendWiseCard)
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    
+                    //Spending Prediction
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "brain.head.profile")
+                                .foregroundColor(.spendWiseTeal)
+
+                            Text("Spending Prediction")
+                                .font(.headline)
+                                .foregroundColor(.spendWiseText)
+                        }
+
+                        if let predicted = predictedMonthlySpending {
+                            Text(
+                                predicted,
+                                format: .currency(
+                                    code: Locale.current.currency?.identifier ?? "LKR"
+                                )
+                            )
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.spendWiseText)
+
+                            Text("Estimated total spending by the end of this month")
+                                .font(.subheadline)
+                                .foregroundColor(.spendWiseSecondaryText)
+
+                            if monthlyBudget > 0 {
+                                let difference = predicted - monthlyBudget
+
+                                if difference > 0 {
+                                    Label(
+                                        "Predicted to exceed budget by " +
+                                        difference.formatted(
+                                            .currency(
+                                                code: Locale.current.currency?.identifier ?? "LKR"
+                                            )
+                                        ),
+                                        systemImage: "exclamationmark.triangle.fill"
+                                    )
+                                    .foregroundColor(.spendWiseDanger)
+                                    .font(.subheadline)
+                                } else {
+                                    Label(
+                                        "Predicted to stay within budget",
+                                        systemImage: "checkmark.circle.fill"
+                                    )
+                                    .foregroundColor(.spendWiseSuccess)
+                                    .font(.subheadline)
+                                }
+                            }
+                        } else {
+                            Text("Prediction is currently unavailable.")
+                                .font(.subheadline)
+                                .foregroundColor(.spendWiseSecondaryText)
+                        }
+                    }
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.spendWiseCard)
@@ -376,6 +468,11 @@ struct HomeView: View {
             ) { _ in
                 refreshDashboard()
             }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    refreshDashboard()
+                }
+            }
         }
     }
 
@@ -465,6 +562,10 @@ struct HomeView: View {
             let currentBudget = budgets.first
 
             monthlyBudget = currentBudget?.totalAmount ?? 0
+
+            // Refresh the prediction even if no monthly budget exists.
+            predictedMonthlySpending =
+                SpendingPredictionService.shared.predictMonthlySpending()
 
             guard let budgetID = currentBudget?.budgetID,
                   !budgetID.isEmpty else {
