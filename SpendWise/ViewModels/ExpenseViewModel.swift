@@ -75,7 +75,7 @@ final class ExpenseViewModel: ObservableObject {
         errorMessage = ""
         showSuccessMessage = true
         fetchExpenses()
-
+        checkCurrentMonthBudgetAlert()
         print("Expense saved successfully.")
     }
     
@@ -87,7 +87,7 @@ final class ExpenseViewModel: ObservableObject {
         CoreDataService.shared.saveContext()
 
         fetchExpenses()
-
+        checkCurrentMonthBudgetAlert()
         print("Expense deleted successfully.")
     }
     
@@ -117,4 +117,66 @@ final class ExpenseViewModel: ObservableObject {
             )
         }
     }
+    
+    func checkCurrentMonthBudgetAlert() {
+        let calendar = Calendar.current
+        let now = Date()
+
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+
+        let context = CoreDataService.shared.viewContext
+
+        let budgetRequest = Budget.fetchRequest()
+        budgetRequest.predicate = NSPredicate(
+            format: "month == %d AND year == %d",
+            month,
+            year
+        )
+        budgetRequest.fetchLimit = 1
+
+        let expenseRequest = Expense.fetchRequest()
+
+        guard
+            let startOfMonth = calendar.date(
+                from: calendar.dateComponents([.year, .month], from: now)
+            ),
+            let startOfNextMonth = calendar.date(
+                byAdding: .month,
+                value: 1,
+                to: startOfMonth
+            )
+        else {
+            return
+        }
+
+        expenseRequest.predicate = NSPredicate(
+            format: "date >= %@ AND date < %@",
+            startOfMonth as NSDate,
+            startOfNextMonth as NSDate
+        )
+
+        do {
+            guard let budget = try context.fetch(budgetRequest).first else {
+                return
+            }
+
+            let expenses = try context.fetch(expenseRequest)
+            let monthlySpending = expenses.reduce(0.0) {
+                $0 + $1.amount
+            }
+
+            Task {
+                await NotificationService.shared.checkBudgetThresholds(
+                    spending: monthlySpending,
+                    budget: budget.totalAmount
+                )
+            }
+        } catch {
+            print(
+                "Budget alert calculation error: \(error.localizedDescription)"
+            )
+        }
+    }
+
 }

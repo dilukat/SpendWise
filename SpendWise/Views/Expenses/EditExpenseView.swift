@@ -99,17 +99,21 @@ struct EditExpenseView: View {
             in: .whitespacesAndNewlines
         )
         
+        
         // Save the updated expense to Core Data
-            CoreDataService.shared.saveContext()
+       CoreDataService.shared.saveContext()
 
-        // Notify HistoryView to refresh its expense list
-        NotificationCenter.default.post(
-                name: Notification.Name("ExpenseDidChange"),
-                object: nil
-        )
+       // Recheck the monthly budget threshold
+       ExpenseViewModel().checkCurrentMonthBudgetAlert()
 
-        // Close the edit screen
-        dismiss()
+       // Notify HistoryView and the dashboard to refresh
+       NotificationCenter.default.post(
+           name: Notification.Name("ExpenseDidChange"),
+           object: nil
+       )
+
+       // Close the edit screen
+       dismiss()
     }
 }
 

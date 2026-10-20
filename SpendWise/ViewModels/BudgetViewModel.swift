@@ -45,10 +45,6 @@ final class BudgetViewModel: ObservableObject {
 
     init() {
         refreshData()
-        fetchBudgets()
-        calculateCurrentMonthSpending()
-        fetchCategoryBudgets()
-        calculateCategorySpending()
     }
     
     
@@ -396,9 +392,24 @@ final class BudgetViewModel: ObservableObject {
         )
 
         do {
+            
             let expenses = try CoreDataService.shared.viewContext.fetch(request)
+
             currentMonthSpending = expenses.reduce(0) {
                 $0 + $1.amount
+            }
+
+            // Check whether the monthly budget threshold has been reached.
+            if let budget = currentMonthBudget {
+                let spending = currentMonthSpending
+                let budgetAmount = budget.totalAmount
+
+                Task {
+                    await NotificationService.shared.checkBudgetThresholds(
+                        spending: spending,
+                        budget: budgetAmount
+                    )
+                }
             }
         } catch {
             errorMessage = "Unable to calculate spending."
