@@ -15,6 +15,11 @@ final class ExpenseViewModel: ObservableObject {
     @Published var amount = ""
     @Published var category = "Food"
     @Published var merchant = ""
+    
+    @Published var receiptData: Data?
+    
+    @Published var latitude: Double = 0
+    @Published var longitude: Double = 0
 
     @Published var errorMessage = ""
     @Published var showSuccessMessage = false
@@ -55,11 +60,17 @@ final class ExpenseViewModel: ObservableObject {
         expense.latitude = 0
         expense.longitude = 0
         expense.budgetID = ""
+        expense.receiptData = receiptData
+        expense.latitude = latitude
+        expense.longitude = longitude
 
         CoreDataService.shared.saveContext()
 
         amount = ""
         merchant = ""
+        receiptData = nil
+        latitude = 0
+        longitude = 0
 
         errorMessage = ""
         showSuccessMessage = true

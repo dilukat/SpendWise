@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import CoreLocation
 
 struct AddExpenseView: View {
 
@@ -22,6 +23,9 @@ struct AddExpenseView: View {
     @State private var extractedMerchant: String?
     @State private var extractedAmount: Double?
     @State private var extractedDate: Date?
+    
+    @StateObject private var locationService = LocationService.shared
+    @State private var locationMessage = ""
 
     var body: some View {
 
@@ -92,6 +96,29 @@ struct AddExpenseView: View {
                         )
                     }
                     
+                    if let receiptImage {
+                        Image(uiImage: receiptImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 240)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 12)
+                            )
+
+                        Button(role: .destructive) {
+                            selectedReceipt = nil
+                            self.receiptImage = nil
+                        } label: {
+                            Label(
+                                "Remove Receipt",
+                                systemImage: "trash"
+                            )
+                        }
+                    }
+
+                    if isLoadingReceipt {
+                        ProgressView("Loading receipt...")
+                    }
                     
                     Button {
                         guard let receiptImage else { return }
@@ -212,31 +239,34 @@ struct AddExpenseView: View {
                             .font(.subheadline)
                             .foregroundStyle(Color.spendWiseDanger)
                     }
+                    
+                    
+                    Button {
+                        if let extractedMerchant {
+                            viewModel.merchant = extractedMerchant
+                        }
 
-
-                    if let receiptImage {
-                        Image(uiImage: receiptImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 240)
-                            .clipShape(
-                                RoundedRectangle(cornerRadius: 12)
-                            )
-
-                        Button(role: .destructive) {
-                            selectedReceipt = nil
-                            self.receiptImage = nil
-                        } label: {
-                            Label(
-                                "Remove Receipt",
-                                systemImage: "trash"
+                        if let extractedAmount {
+                            viewModel.amount = String(
+                                format: "%.2f",
+                                extractedAmount
                             )
                         }
+                    } label: {
+                        Label(
+                            "Use Extracted Details",
+                            systemImage: "arrow.down.doc"
+                        )
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.spendWiseTeal)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
 
-                    if isLoadingReceipt {
-                        ProgressView("Loading receipt...")
-                    }
+
+                    
                 }
 
 
@@ -328,6 +358,53 @@ struct AddExpenseView: View {
                             )
                     )
                 }
+                
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Expense Location")
+                        .font(.headline)
+                        .foregroundColor(.spendWiseText)
+
+                    Button {
+                        locationMessage = "Getting your location..."
+                        locationService.requestCurrentLocation()
+                    } label: {
+                        HStack {
+                            Image(systemName: "location.fill")
+
+                            Text("Capture Current Location")
+
+                            Spacer()
+
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        .foregroundColor(.spendWiseTeal)
+                        .padding()
+                        .background(Color.spendWiseCard)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .onChange(of: locationService.currentLocation) { _, newLocation in
+                        guard let newLocation else { return }
+
+                        viewModel.latitude = newLocation.coordinate.latitude
+                        viewModel.longitude = newLocation.coordinate.longitude
+
+                        locationMessage = "Location captured successfully."
+                    }
+
+                    if let location = locationService.currentLocation {
+                        Text(
+                            "Latitude: \(location.coordinate.latitude.formatted(.number.precision(.fractionLength(4))))\nLongitude: \(location.coordinate.longitude.formatted(.number.precision(.fractionLength(4))))"
+                        )
+                        .font(.caption)
+                        .foregroundColor(.spendWiseSecondaryText)
+                    } else if !locationMessage.isEmpty {
+                        Text(locationMessage)
+                            .font(.caption)
+                            .foregroundColor(.spendWiseSecondaryText)
+                    }
+                }
+                .padding(.vertical, 8)
+                
 
                 // MARK: - Error
 
@@ -342,8 +419,12 @@ struct AddExpenseView: View {
 
                 Button {
 
+                    viewModel.receiptData = receiptImage?.jpegData(
+                        compressionQuality: 0.8
+                    )
+
                     viewModel.saveExpense()
-                    
+
                     NotificationCenter.default.post(
                         name: Notification.Name("ExpenseDidChange"),
                         object: nil

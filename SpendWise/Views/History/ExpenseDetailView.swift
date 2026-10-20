@@ -5,9 +5,9 @@
 //  Created by Theekshana on 2026-10-13.
 //
 
-
-
 import SwiftUI
+import UIKit
+import MapKit
 
 struct ExpenseDetailView: View {
     let expense: Expense
@@ -91,6 +91,71 @@ struct ExpenseDetailView: View {
                 .padding(.horizontal)
                 .background(Color.spendWiseCard)
                 .cornerRadius(16)
+                
+                
+                if let coordinate = expenseCoordinate {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Expense Location")
+                            .font(.headline)
+                            .foregroundColor(Color.spendWiseText)
+
+                        Map(
+                            initialPosition: .region(
+                                MKCoordinateRegion(
+                                    center: coordinate,
+                                    span: MKCoordinateSpan(
+                                        latitudeDelta: 0.01,
+                                        longitudeDelta: 0.01
+                                    )
+                                )
+                            )
+                        ) {
+                            Marker(
+                                expense.merchant?.isEmpty == false
+                                    ? expense.merchant!
+                                    : "Expense Location",
+                                coordinate: coordinate
+                            )
+                        }
+                        .frame(height: 240)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        Label(
+                            "Location saved with this expense",
+                            systemImage: "location.fill"
+                        )
+                        .font(.caption)
+                        .foregroundColor(Color.spendWiseSecondaryText)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.spendWiseCard)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+
+                
+                if let receiptData = expense.receiptData,
+                   let savedReceiptImage = UIImage(data: receiptData) {
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Receipt")
+                            .font(.headline)
+                            .foregroundStyle(Color.spendWiseText)
+
+                        Image(uiImage: savedReceiptImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 320)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 12)
+                            )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.spendWiseCard)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+
 
                 // Delete button
                 Button(role: .destructive) {
@@ -153,6 +218,25 @@ struct ExpenseDetailView: View {
         } message: {
             Text("This action cannot be undone.")
         }
+    }
+    
+    private var expenseCoordinate: CLLocationCoordinate2D? {
+        let latitude = expense.latitude
+        let longitude = expense.longitude
+
+        // Zero coordinates mean no location was captured.
+        guard !(latitude == 0 && longitude == 0),
+              latitude.isFinite,
+              longitude.isFinite,
+              (-90...90).contains(latitude),
+              (-180...180).contains(longitude) else {
+            return nil
+        }
+
+        return CLLocationCoordinate2D(
+            latitude: latitude,
+            longitude: longitude
+        )
     }
 
     private var currencyFormatter: NumberFormatter {
