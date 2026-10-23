@@ -282,11 +282,16 @@ struct SettingsView: View {
         }
 
         do {
-            // 1. Upload pending expenses.
-            let uploadedExpenseCount =
-                try await FirestoreSyncService.shared.uploadPendingExpenses()
+            // 1. Upload & delete pending expenses.
+            let deletedCount = try await FirestoreSyncService.shared
+                .syncPendingExpenseDeletions()
 
-            print("Pending expenses uploaded: \(uploadedExpenseCount)")
+            print("Pending expense deletions completed: \(deletedCount)")
+
+            let uploadedCount = try await FirestoreSyncService.shared
+                .uploadPendingExpenses()
+
+            print("Pending expenses uploaded: \(uploadedCount)")
 
             // 2. Upload local monthly and category budgets.
             let budgetUploadResult =
