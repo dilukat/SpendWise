@@ -266,6 +266,7 @@ struct SettingsView: View {
 
     // MARK: - Sync All Data
 
+    
     @MainActor
     private func syncAllData() async {
         guard !isSyncingExpenses else {
@@ -281,9 +282,21 @@ struct SettingsView: View {
         }
 
         do {
-            let uploadedCount = try await FirestoreSyncService.shared.uploadPendingExpenses()
-            print("Pending expenses uploaded: \(uploadedCount)")
-            
+            // 1. Upload pending expenses.
+            let uploadedExpenseCount =
+                try await FirestoreSyncService.shared.uploadPendingExpenses()
+
+            print("Pending expenses uploaded: \(uploadedExpenseCount)")
+
+            // 2. Upload local monthly and category budgets.
+            let budgetUploadResult =
+                try await FirestoreSyncService.shared
+                    .uploadLocalBudgetsAndCategoryBudgets()
+
+            print("Monthly budgets uploaded: \(budgetUploadResult.budgets)")
+            print("Category budgets uploaded: \(budgetUploadResult.categoryBudgets)")
+
+            // 3. Download the latest cloud data.
             let expenseCount =
                 try await FirestoreSyncService.shared.downloadExpenses()
 
@@ -291,28 +304,28 @@ struct SettingsView: View {
                 try await FirestoreSyncService.shared.downloadBudgets()
 
             let categoryBudgetCount =
-                try await FirestoreSyncService.shared
-                    .downloadCategoryBudgets()
+                try await FirestoreSyncService.shared.downloadCategoryBudgets()
 
             syncMessage = """
             Sync completed successfully.
 
-            Expenses: \(expenseCount)
-            Monthly budgets: \(budgetCount)
-            Category budgets: \(categoryBudgetCount)
+            Expenses downloaded: \(expenseCount)
+            Monthly budgets uploaded: \(budgetUploadResult.budgets)
+            Category budgets uploaded: \(budgetUploadResult.categoryBudgets)
+            Monthly budgets downloaded: \(budgetCount)
+            Category budgets downloaded: \(categoryBudgetCount)
             """
 
             print(syncMessage)
 
         } catch {
-            syncMessage =
-                "Sync failed: \(error.localizedDescription)"
-
+            syncMessage = "Sync failed: \(error.localizedDescription)"
             syncError = true
 
             print("Cloud sync error: \(error.localizedDescription)")
         }
     }
+
 
     // MARK: - Logout
 

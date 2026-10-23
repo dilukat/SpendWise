@@ -330,6 +330,111 @@ final class FirestoreSyncService {
             .setData(data, merge: true)
     }
     
+    
+    func uploadLocalBudgetsAndCategoryBudgets() async throws -> (budgets: Int, categoryBudgets: Int) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            throw NSError(
+                domain: "FirestoreSyncService",
+                code: 401,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "Please log in before syncing budgets."
+                ]
+            )
+        }
+
+        let context = CoreDataService.shared.viewContext
+
+        // Fetch only the current user's monthly budgets.
+        let budgetRequest = NSFetchRequest<Budget>(
+            entityName: "Budget"
+        )
+        budgetRequest.predicate = NSPredicate(
+            format: "userID == %@",
+            userID
+        )
+
+        let localBudgets = try context.fetch(budgetRequest)
+
+        var budgetsByID: [String: Budget] = [:]
+        var uploadedBudgets = 0
+
+        // Upload monthly budgets first.
+        for budget in localBudgets {
+            guard Auth.auth().currentUser?.uid == userID else {
+                throw NSError(
+                    domain: "FirestoreSyncService",
+                    code: 403,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Account changed during budget synchronization."
+                    ]
+                )
+            }
+
+            guard let budgetID = budget.budgetID,
+                  !budgetID.isEmpty else {
+                print("Skipping budget with a missing ID.")
+                continue
+            }
+
+            try await uploadBudget(budget)
+            budgetsByID[budgetID] = budget
+            uploadedBudgets += 1
+        }
+
+        // Fetch category budgets belonging to those monthly budgets.
+        let budgetIDs = Array(budgetsByID.keys)
+
+        guard !budgetIDs.isEmpty else {
+            print("No local budgets found for the current user.")
+            return (uploadedBudgets, 0)
+        }
+
+        let categoryRequest = NSFetchRequest<CategoryBudget>(
+            entityName: "CategoryBudget"
+        )
+        categoryRequest.predicate = NSPredicate(
+            format: "budgetID IN %@",
+            budgetIDs
+        )
+
+        let localCategoryBudgets = try context.fetch(categoryRequest)
+        var uploadedCategoryBudgets = 0
+
+        for categoryBudget in localCategoryBudgets {
+            guard Auth.auth().currentUser?.uid == userID else {
+                throw NSError(
+                    domain: "FirestoreSyncService",
+                    code: 403,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Account changed during category budget synchronization."
+                    ]
+                )
+            }
+
+            guard let budgetID = categoryBudget.budgetID,
+                  let monthlyBudget = budgetsByID[budgetID] else {
+                print("Skipping category budget without a matching monthly budget.")
+                continue
+            }
+
+            try await uploadCategoryBudget(
+                categoryBudget,
+                monthlyBudget: monthlyBudget
+            )
+
+            uploadedCategoryBudgets += 1
+        }
+
+        print("Monthly budgets uploaded: \(uploadedBudgets)")
+        print("Category budgets uploaded: \(uploadedCategoryBudgets)")
+
+        return (uploadedBudgets, uploadedCategoryBudgets)
+    }
+
+    
     func downloadBudgets() async throws -> Int {
         guard let userID = Auth.auth().currentUser?.uid else {
             throw NSError(

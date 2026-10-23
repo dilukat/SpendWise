@@ -26,6 +26,9 @@ struct AddExpenseView: View {
     
     @StateObject private var locationService = LocationService.shared
     @State private var locationMessage = ""
+    
+    @State private var isShowingCamera = false
+    @State private var isShowingCameraUnavailableAlert = false
 
     var body: some View {
 
@@ -56,45 +59,100 @@ struct AddExpenseView: View {
                         .font(.headline)
                         .foregroundStyle(Color.spendWiseText)
 
-                    PhotosPicker(
-                        selection: $selectedReceipt,
-                        matching: .images,
-                        photoLibrary: .shared()
-                    ) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "receipt")
-                                .font(.title2)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Choose Receipt")
-                                    .font(.headline)
-
-                                Text("Select a receipt photo to scan")
-                                    .font(.caption)
-                                    .foregroundStyle(
-                                        Color.spendWiseSecondaryText
-                                    )
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "photo")
+//                    PhotosPicker(
+//                        selection: $selectedReceipt,
+//                        matching: .images,
+//                        photoLibrary: .shared()
+//                    ) {
+//                        HStack(spacing: 12) {
+//                            Image(systemName: "receipt")
+//                                .font(.title2)
+//
+//                            VStack(alignment: .leading, spacing: 4) {
+//                                Text("Choose Receipt")
+//                                    .font(.headline)
+//
+//                                Text("Select a receipt photo to scan")
+//                                    .font(.caption)
+//                                    .foregroundStyle(
+//                                        Color.spendWiseSecondaryText
+//                                    )
+//                            }
+//                            
+//                            Button {
+//                                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+//                                    isShowingCamera = true
+//                                } else {
+//                                    isShowingCameraUnavailableAlert = true
+//                                }
+//                            } label: {
+//                                Label("Take Photo", systemImage: "camera")
+//                            }
+//
+//                            Spacer()
+//
+//                            Image(systemName: "photo")
+//                            
+//                            
+//                        }
+//                        .foregroundStyle(Color.spendWiseTeal)
+//                        .padding()
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .background(Color.spendWiseCard)
+//                        .clipShape(
+//                            RoundedRectangle(cornerRadius: 12)
+//                        )
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 12)
+//                                .stroke(
+//                                    Color.spendWiseBorder,
+//                                    lineWidth: 1
+//                                )
+//                        )
+//                    }
+                    
+                    HStack(spacing: 12) {
+                        PhotosPicker(
+                            selection: $selectedReceipt,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            Label(
+                                "Choose Receipt",
+                                systemImage: "photo"
+                            )
+                            .font(.headline)
+                            .foregroundStyle(Color.spendWiseTeal)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.spendWiseCard)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        .foregroundStyle(Color.spendWiseTeal)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.spendWiseCard)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: 12)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(
-                                    Color.spendWiseBorder,
-                                    lineWidth: 1
-                                )
-                        )
+
+                        Button {
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                isShowingCamera = true
+                            } else {
+                                isShowingCameraUnavailableAlert = true
+                            }
+                        } label: {
+                            Label(
+                                "Take Photo",
+                                systemImage: "camera"
+                            )
+                            .font(.headline)
+                            .foregroundStyle(Color.spendWiseTeal)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.spendWiseCard)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
+
+                    
+                    ////////////////////////
+                    ///
+                    ///
                     
                     if let receiptImage {
                         Image(uiImage: receiptImage)
@@ -455,8 +513,11 @@ struct AddExpenseView: View {
             extractedAmount = nil
             extractedDate = nil
             
+//            guard let selectedReceipt else {
+//                receiptImage = nil
+//                return
+//            }
             guard let selectedReceipt else {
-                receiptImage = nil
                 return
             }
 
@@ -494,7 +555,30 @@ struct AddExpenseView: View {
             Text("Your expense was saved successfully.")
         }
         
+        .sheet(isPresented: $isShowingCamera) {
+            CameraPicker(image: $receiptImage)
+                .onDisappear {
+                    if receiptImage != nil {
+                        recognizedReceiptText = []
+                        ocrErrorMessage = ""
+                        extractedMerchant = nil
+                        extractedAmount = nil
+                        extractedDate = nil
+                    }
+                }
+        }
+
+        .alert(
+            "Camera Unavailable",
+            isPresented: $isShowingCameraUnavailableAlert
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Camera capture is unavailable on this simulator. Please use Choose Receipt to import a photo.")
+        }
+        
     }
+    
 }
 
 #Preview {

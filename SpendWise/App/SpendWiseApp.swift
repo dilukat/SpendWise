@@ -21,6 +21,9 @@ struct SpendWiseApp: App {
 
     init() {
         FirebaseApp.configure()
+
+        // Start monitoring network connectivity for expense sync.
+        _ = ExpenseSyncMonitor.shared
     }
 
     var body: some Scene {

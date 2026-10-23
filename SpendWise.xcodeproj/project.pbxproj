@@ -16,9 +16,22 @@
 		A95F5F6B306E329D00A935D1 /* SpendWise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpendWise.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A9814A5C308B14F8002A7856 /* Exceptions for "SpendWise" folder in "SpendWise" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A95F5F6A306E329D00A935D1 /* SpendWise */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A95F5F6D306E329D00A935D1 /* SpendWise */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A9814A5C308B14F8002A7856 /* Exceptions for "SpendWise" folder in "SpendWise" target */,
+			);
 			path = SpendWise;
 			sourceTree = "<group>";
 		};
@@ -276,6 +289,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SpendWise/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "SpendWise uses the camera to capture receipts for expense tracking.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to securely protect access to your Spendwise expense data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Spendwise uses your location to record where you make expenses.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -309,6 +324,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SpendWise/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "SpendWise uses the camera to capture receipts for expense tracking.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to securely protect access to your Spendwise expense data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Spendwise uses your location to record where you make expenses.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
