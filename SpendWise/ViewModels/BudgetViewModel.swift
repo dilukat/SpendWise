@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 internal import Combine
+import FirebaseAuth
 
 @MainActor
 final class BudgetViewModel: ObservableObject {
@@ -49,75 +50,89 @@ final class BudgetViewModel: ObservableObject {
     
     
     // MARK: - Fetch Category Budgets
+   
+    func fetchCategoryBudgets() {
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid,
+              let currentBudget = currentMonthBudget,
+              let budgetID = currentBudget.budgetID,
+              currentBudget.userID == userID else {
+            categoryBudgets = []
+            return
+        }
 
-   func fetchCategoryBudgets() {
-       guard let budgetID = currentMonthBudget?.budgetID else {
-           categoryBudgets = []
-           return
-       }
+        let request = NSFetchRequest<CategoryBudget>(
+            entityName: "CategoryBudget"
+        )
 
-       let request = NSFetchRequest<CategoryBudget>(
-           entityName: "CategoryBudget"
-       )
+        request.predicate = NSPredicate(
+            format: "budgetID == %@",
+            budgetID
+        )
 
-       request.predicate = NSPredicate(
-           format: "budgetID == %@",
-           budgetID
-       )
+        do {
+            categoryBudgets = try CoreDataService.shared
+                .viewContext.fetch(request)
+        } catch {
+            errorMessage = "Unable to load category budgets."
+            print("Category budget fetch error: \(error.localizedDescription)")
+            categoryBudgets = []
+        }
+    }
 
-       do {
-           categoryBudgets = try CoreDataService.shared
-               .viewContext.fetch(request)
-       } catch {
-           errorMessage = "Unable to load category budgets."
-           print("Category budget fetch error: \(error.localizedDescription)")
-       }
-   }
 
    // MARK: - Calculate Category Spending
 
-   func calculateCategorySpending() {
-       let calendar = Calendar.current
-       let now = Date()
+   
+    func calculateCategorySpending() {
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            categorySpending = [:]
+            print("No authenticated user. Category calculation skipped.")
+            return
+        }
 
-       guard let startOfMonth = calendar.date(
-           from: calendar.dateComponents([.year, .month], from: now)
-       ),
-       let startOfNextMonth = calendar.date(
-           byAdding: .month,
-           value: 1,
-           to: startOfMonth
-       ) else {
-           return
-       }
+        let calendar = Calendar.current
+        let now = Date()
 
-       let request = NSFetchRequest<Expense>(entityName: "Expense")
+        guard let startOfMonth = calendar.date(
+            from: calendar.dateComponents([.year, .month], from: now)
+        ),
+        let startOfNextMonth = calendar.date(
+            byAdding: .month,
+            value: 1,
+            to: startOfMonth
+        ) else {
+            return
+        }
 
-       request.predicate = NSPredicate(
-           format: "date >= %@ AND date < %@",
-           startOfMonth as NSDate,
-           startOfNextMonth as NSDate
-       )
+        let request = NSFetchRequest<Expense>(entityName: "Expense")
 
-       do {
-           let expenses = try CoreDataService.shared
-               .viewContext.fetch(request)
+        request.predicate = NSPredicate(
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
+            startOfMonth as NSDate,
+            startOfNextMonth as NSDate
+        )
 
-           var totals: [String: Double] = [:]
+        do {
+            let expenses = try CoreDataService.shared
+                .viewContext.fetch(request)
 
-           for category in categories {
-               totals[category] = expenses
-                   .filter { $0.category == category }
-                   .reduce(0) { $0 + $1.amount }
-           }
+            var totals: [String: Double] = [:]
 
-           categorySpending = totals
+            for category in categories {
+                totals[category] = expenses
+                    .filter { $0.category == category }
+                    .reduce(0) { $0 + $1.amount }
+            }
 
-       } catch {
-           errorMessage = "Unable to calculate category spending."
-           print("Category spending error: \(error.localizedDescription)")
-       }
-   }
+            categorySpending = totals
+
+        } catch {
+            errorMessage = "Unable to calculate category spending."
+            print("Category spending error: \(error.localizedDescription)")
+        }
+    }
+
 
    // MARK: - Save Category Budget
 
@@ -202,11 +217,30 @@ final class BudgetViewModel: ObservableObject {
 
             CoreDataService.shared.saveContext()
 
+            let categoryBudgetToSync = categoryBudget
+            let monthlyBudgetToSync = monthlyBudget
+            let categoryName = selectedCategory
+
             categoryLimit = ""
             errorMessage = ""
-            successMessage = "\(selectedCategory) budget saved successfully."
+            successMessage = "\(categoryName) budget saved locally."
 
             fetchCategoryBudgets()
+
+            Task { @MainActor in
+                do {
+                    try await FirestoreSyncService.shared.uploadCategoryBudget(
+                        categoryBudgetToSync,
+                        monthlyBudget: monthlyBudgetToSync
+                    )
+
+                    successMessage = "\(categoryName) budget saved and synced successfully."
+                    print("Category budget synced to Firestore: \(categoryName)")
+                } catch {
+                    successMessage = "\(categoryName) budget saved locally, but cloud sync failed."
+                    print("Category budget sync failed: \(error.localizedDescription)")
+                }
+            }
 
         } catch {
             errorMessage = "Unable to save the category budget."
@@ -232,8 +266,20 @@ final class BudgetViewModel: ObservableObject {
     // MARK: - Fetch Budgets
 
     func fetchBudgets() {
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            budgets = []
+            currentMonthBudget = nil
+            print("No authenticated user. No budgets fetched.")
+            return
+        }
+
         let context = CoreDataService.shared.viewContext
         let request = Budget.fetchRequest()
+
+        request.predicate = NSPredicate(
+            format: "userID == %@",
+            userID
+        )
 
         request.sortDescriptors = [
             NSSortDescriptor(key: "year", ascending: false),
@@ -243,9 +289,11 @@ final class BudgetViewModel: ObservableObject {
         do {
             budgets = try context.fetch(request)
             updateCurrentMonthBudget()
+            print("Fetched \(budgets.count) budgets for current user.")
         } catch {
-            errorMessage = "Unable to load budgets: \(error.localizedDescription)"
             print("Budget fetch error: \(error.localizedDescription)")
+            budgets = []
+            currentMonthBudget = nil
         }
     }
 
@@ -265,7 +313,15 @@ final class BudgetViewModel: ObservableObject {
 
     // MARK: - Save Monthly Budget
 
+    
+    
     func saveMonthlyBudget() {
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            errorMessage = "Please log in to save a budget."
+            successMessage = ""
+            return
+        }
+
         let trimmedAmount = totalBudget.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -282,12 +338,15 @@ final class BudgetViewModel: ObservableObject {
         let now = Date()
         let month = calendar.component(.month, from: now)
         let year = calendar.component(.year, from: now)
-
         let context = CoreDataService.shared.viewContext
 
         let existingBudget = budgets.first {
-            Int($0.month) == month && Int($0.year) == year
+            $0.userID == userID &&
+            Int($0.month) == month &&
+            Int($0.year) == year
         }
+
+        let budgetToSync: Budget
 
         if let existingBudget {
             guard let budgetID = existingBudget.budgetID,
@@ -297,11 +356,9 @@ final class BudgetViewModel: ObservableObject {
                 return
             }
 
-            // Fetch category allocations for this monthly budget.
             let request = NSFetchRequest<CategoryBudget>(
                 entityName: "CategoryBudget"
             )
-
             request.predicate = NSPredicate(
                 format: "budgetID == %@",
                 budgetID
@@ -309,12 +366,10 @@ final class BudgetViewModel: ObservableObject {
 
             do {
                 let categoryBudgets = try context.fetch(request)
-
                 let allocatedTotal = categoryBudgets.reduce(0.0) {
                     $0 + $1.limit
                 }
 
-                // The monthly budget cannot be lower than allocations.
                 guard amount >= allocatedTotal else {
                     errorMessage = """
                     Your monthly budget cannot be lower than your total
@@ -325,7 +380,6 @@ final class BudgetViewModel: ObservableObject {
                     successMessage = ""
                     return
                 }
-
             } catch {
                 errorMessage = "Unable to validate your category allocations."
                 successMessage = ""
@@ -334,28 +388,40 @@ final class BudgetViewModel: ObservableObject {
             }
 
             existingBudget.totalAmount = amount
+            budgetToSync = existingBudget
 
         } else {
-            // Create a new monthly budget.
             let budget = Budget(context: context)
             budget.budgetID = UUID().uuidString
-            budget.userID = ""
+            budget.userID = userID
             budget.month = Int16(month)
             budget.year = Int16(year)
             budget.totalAmount = amount
             budget.createdDate = Date()
+
+            budgetToSync = budget
         }
 
         CoreDataService.shared.saveContext()
 
         errorMessage = ""
-        successMessage = "Monthly budget saved successfully."
+        successMessage = "Monthly budget saved locally."
         totalBudget = ""
 
         fetchBudgets()
+
+        Task { @MainActor in
+            do {
+                try await FirestoreSyncService.shared.uploadBudget(budgetToSync)
+                successMessage = "Monthly budget saved and synced successfully."
+                print("Budget synced to Firestore.")
+            } catch {
+                successMessage = "Monthly budget saved locally, but cloud sync failed."
+                print("Budget cloud sync failed: \(error.localizedDescription)")
+            }
+        }
     }
 
-    
     
     // MARK: - Refresh Budget Data
 
@@ -369,7 +435,14 @@ final class BudgetViewModel: ObservableObject {
 
     // MARK: - Calculate Current Month Spending
 
+    
     func calculateCurrentMonthSpending() {
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            currentMonthSpending = 0
+            print("No authenticated user. Spending calculation skipped.")
+            return
+        }
+
         let calendar = Calendar.current
         let now = Date()
 
@@ -386,13 +459,13 @@ final class BudgetViewModel: ObservableObject {
 
         let request = Expense.fetchRequest()
         request.predicate = NSPredicate(
-            format: "date >= %@ AND date < %@",
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
             startOfMonth as NSDate,
             startOfNextMonth as NSDate
         )
 
         do {
-            
             let expenses = try CoreDataService.shared.viewContext.fetch(request)
 
             currentMonthSpending = expenses.reduce(0) {
@@ -416,6 +489,7 @@ final class BudgetViewModel: ObservableObject {
             print("Monthly spending error: \(error.localizedDescription)")
         }
     }
+
     
     func percentageUsed(spending: Double, limit: Double) -> Int {
         guard limit > 0 else {

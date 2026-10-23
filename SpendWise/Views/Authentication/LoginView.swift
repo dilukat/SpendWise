@@ -184,6 +184,8 @@ struct LoginView: View {
                 password: password
             )
 
+            print("Login successful. User authenticated.")
+
         } catch {
 
             errorMessage = firebaseErrorMessage(error)

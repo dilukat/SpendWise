@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A92FDD203088A9340021B4D7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A92FDD1F3088A9340021B4D7 /* FirebaseFirestore */; };
 		A95F5FB1306E7EB300A935D1 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = A95F5FB0306E7EB300A935D1 /* FirebaseCore */; };
 		A95F5FB3306E7EB900A935D1 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A95F5FB2306E7EB900A935D1 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
@@ -30,6 +31,7 @@
 			files = (
 				A95F5FB1306E7EB300A935D1 /* FirebaseCore in Frameworks */,
 				A95F5FB3306E7EB900A935D1 /* FirebaseAuth in Frameworks */,
+				A92FDD203088A9340021B4D7 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +84,7 @@
 			packageProductDependencies = (
 				A95F5FB0306E7EB300A935D1 /* FirebaseCore */,
 				A95F5FB2306E7EB900A935D1 /* FirebaseAuth */,
+				A92FDD1F3088A9340021B4D7 /* FirebaseFirestore */,
 			);
 			productName = SpendWise;
 			productReference = A95F5F6B306E329D00A935D1 /* SpendWise.app */;
@@ -273,6 +276,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to securely protect access to your Spendwise expense data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Spendwise uses your location to record where you make expenses.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -305,6 +309,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to securely protect access to your Spendwise expense data.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Spendwise uses your location to record where you make expenses.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -363,6 +368,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A92FDD1F3088A9340021B4D7 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A95F5FAA306E781700A935D1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
 		A95F5FB0306E7EB300A935D1 /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A95F5FAA306E781700A935D1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

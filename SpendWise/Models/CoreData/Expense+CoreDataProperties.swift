@@ -21,13 +21,14 @@ extension Expense {
     @NSManaged public var amount: Double
     @NSManaged public var budgetID: String?
     @NSManaged public var category: String?
+    @NSManaged public var isSynced: Bool
     @NSManaged public var date: Date?
     @NSManaged public var expenseID: String?
     @NSManaged public var latitude: Double
     @NSManaged public var longitude: Double
     @NSManaged public var merchant: String?
     @NSManaged public var receiptData: Data?
-
+    @NSManaged public var userID: String?
 }
 
 extension Expense : Identifiable {

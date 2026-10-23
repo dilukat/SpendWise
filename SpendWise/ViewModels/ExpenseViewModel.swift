@@ -8,6 +8,7 @@
 import Foundation
 internal import Combine
 internal import CoreData
+import FirebaseAuth
 
 @MainActor
 final class ExpenseViewModel: ObservableObject {
@@ -35,37 +36,47 @@ final class ExpenseViewModel: ObservableObject {
         "Other"
     ]
     
-    init() {
-        fetchExpenses()
+    init(shouldFetchOnInit: Bool = true) {
+        if shouldFetchOnInit {
+            fetchExpenses()
+        }
     }
-
+    
     func saveExpense() {
-
         guard let expenseAmount = Double(amount),
+              expenseAmount.isFinite,
               expenseAmount > 0 else {
-
             errorMessage = "Please enter a valid amount."
             return
         }
 
-        let context = CoreDataService.shared.viewContext
+        guard let userID = FirebaseService.shared.currentUser?.uid else {
+            errorMessage = "Please log in to save an expense."
+            return
+        }
 
+        let context = CoreDataService.shared.viewContext
         let expense = Expense(context: context)
 
+        expense.userID = userID
+        expense.isSynced = false
         expense.expenseID = UUID().uuidString
         expense.amount = expenseAmount
         expense.category = category
         expense.merchant = merchant
         expense.date = Date()
-        expense.latitude = 0
-        expense.longitude = 0
         expense.budgetID = ""
         expense.receiptData = receiptData
         expense.latitude = latitude
         expense.longitude = longitude
 
+        // Save locally first.
         CoreDataService.shared.saveContext()
 
+        // Keep a reference to the newly created expense for cloud sync.
+        let savedExpense = expense
+
+        // Reset the form.
         amount = ""
         merchant = ""
         receiptData = nil
@@ -74,49 +85,111 @@ final class ExpenseViewModel: ObservableObject {
 
         errorMessage = ""
         showSuccessMessage = true
+
         fetchExpenses()
         checkCurrentMonthBudgetAlert()
-        print("Expense saved successfully.")
-    }
+
+        print("Expense saved locally.")
+
+        // Upload the expense to Firestore.
+        Task { @MainActor in
+            do {
+                try await FirestoreSyncService.shared.uploadExpense(savedExpense)
+
+                savedExpense.isSynced = true
+                CoreDataService.shared.saveContext()
+
+                print("Expense synced to Firestore.")
+            } catch {
+                print("Expense cloud sync failed: \(error.localizedDescription)")
+            }
+        }    }
     
     
     func deleteExpense(_ expense: Expense) {
-        let context = CoreDataService.shared.viewContext
+        guard let userID = FirebaseService.shared.currentUser?.uid,
+              expense.userID == userID else {
+            errorMessage = "You can only delete your own expenses."
+            return
+        }
 
-        context.delete(expense)
-        CoreDataService.shared.saveContext()
+        Task { @MainActor in
+            do {
+                try await FirestoreSyncService.shared
+                    .deleteExpenseFromFirestore(expense)
 
-        fetchExpenses()
-        checkCurrentMonthBudgetAlert()
-        print("Expense deleted successfully.")
+                let context = CoreDataService.shared.viewContext
+                context.delete(expense)
+                CoreDataService.shared.saveContext()
+
+                fetchExpenses()
+                checkCurrentMonthBudgetAlert()
+
+                print("Expense deleted successfully from local and cloud storage.")
+            } catch {
+                errorMessage = "Could not delete expense from cloud: \(error.localizedDescription)"
+                print("Expense deletion failed: \(error.localizedDescription)")
+            }
+        }
     }
+
+    
+//    func fetchExpenses() {
+//
+//        let context = CoreDataService.shared.viewContext
+//
+//        let request = Expense.fetchRequest()
+//
+//        request.sortDescriptors = [
+//            NSSortDescriptor(
+//                key: "date",
+//                ascending: false
+//            )
+//        ]
+//
+//        do {
+//
+//            expenses = try context.fetch(request)
+//
+//            print("Fetched \(expenses.count) expenses.")
+//
+//        } catch {
+//
+//            print(
+//                "Core Data fetch error: \(error.localizedDescription)"
+//            )
+//        }
+//    }
+    
     
     func fetchExpenses() {
+        guard let userID = FirebaseService.shared.currentUser?.uid else {
+            expenses = []
+            print("No authenticated user. No expenses fetched.")
+            return
+        }
 
         let context = CoreDataService.shared.viewContext
-
         let request = Expense.fetchRequest()
 
+        request.predicate = NSPredicate(
+            format: "userID == %@",
+            userID
+        )
+
         request.sortDescriptors = [
-            NSSortDescriptor(
-                key: "date",
-                ascending: false
-            )
+            NSSortDescriptor(key: "date", ascending: false)
         ]
 
         do {
-
             expenses = try context.fetch(request)
-
-            print("Fetched \(expenses.count) expenses.")
-
+            print("Fetched \(expenses.count) expenses for current user.")
         } catch {
-
-            print(
-                "Core Data fetch error: \(error.localizedDescription)"
-            )
+            print("Core Data fetch error: \(error.localizedDescription)")
+            expenses = []
         }
     }
+
     
     func checkCurrentMonthBudgetAlert() {
         let calendar = Calendar.current
@@ -127,9 +200,14 @@ final class ExpenseViewModel: ObservableObject {
 
         let context = CoreDataService.shared.viewContext
 
+        guard let userID = FirebaseService.shared.currentUser?.uid else {
+            return
+        }
+
         let budgetRequest = Budget.fetchRequest()
         budgetRequest.predicate = NSPredicate(
-            format: "month == %d AND year == %d",
+            format: "userID == %@ AND month == %d AND year == %d",
+            userID,
             month,
             year
         )
@@ -151,7 +229,8 @@ final class ExpenseViewModel: ObservableObject {
         }
 
         expenseRequest.predicate = NSPredicate(
-            format: "date >= %@ AND date < %@",
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
             startOfMonth as NSDate,
             startOfNextMonth as NSDate
         )

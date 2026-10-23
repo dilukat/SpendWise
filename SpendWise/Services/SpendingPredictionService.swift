@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import CoreML
+import FirebaseAuth
 
 struct MonthlySpending: Identifiable {
     let month: Date
@@ -63,8 +64,13 @@ final class SpendingPredictionService {
         }
 
         let request = NSFetchRequest<Expense>(entityName: "Expense")
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            return []
+        }
+
         request.predicate = NSPredicate(
-            format: "date >= %@ AND date < %@",
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
             firstMonthStart as NSDate,
             nextMonthStart as NSDate
         )
@@ -149,8 +155,13 @@ final class SpendingPredictionService {
 
         // Fetch actual spending recorded in the current month.
         let request = NSFetchRequest<Expense>(entityName: "Expense")
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            return nil
+        }
+
         request.predicate = NSPredicate(
-            format: "date >= %@ AND date < %@",
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
             monthStart as NSDate,
             nextMonthStart as NSDate
         )

@@ -17,6 +17,11 @@ final class CoreDataService {
         
         container = NSPersistentContainer(name: "SpendWise")
         
+        if let description = container.persistentStoreDescriptions.first {
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+        }
+        
         container.loadPersistentStores { _, error in
 
                     if let error = error {

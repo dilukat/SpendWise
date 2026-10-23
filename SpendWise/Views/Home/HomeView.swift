@@ -8,6 +8,7 @@
 
 import SwiftUI
 import CoreData
+import FirebaseAuth
 
 private struct CategoryBudgetSummary: Identifiable {
     let category: String
@@ -20,6 +21,7 @@ private struct CategoryBudgetSummary: Identifiable {
 struct HomeView: View {
     
     @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var appState: AppState
 
     @State private var totalSpending: Double = 0
     @State private var monthlyBudget: Double = 0
@@ -468,9 +470,17 @@ struct HomeView: View {
             ) { _ in
                 refreshDashboard()
             }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
+            .onChange(of: appState.currentUserID) { _, newUserID in
+                if newUserID != nil {
                     refreshDashboard()
+                } else {
+                    totalSpending = 0
+                    monthlyBudget = 0
+                    recentExpenses = []
+                    categoryBudgetSummaries = []
+                    categorySpending = [:]
+                    predictedMonthlySpending = nil
+                    errorMessage = ""
                 }
             }
         }
@@ -498,13 +508,28 @@ struct HomeView: View {
         }
 
         // Fetch this month's expenses
+        
+        guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
+            totalSpending = 0
+            categorySpending = [:]
+            recentExpenses = []
+            monthlyBudget = 0
+            predictedMonthlySpending = nil
+            categoryBudgetSummaries = []
+            errorMessage = ""
+            return
+        }
+
+        // Fetch this user's expenses for the current month.
         let expenseRequest = Expense.fetchRequest()
 
         expenseRequest.predicate = NSPredicate(
-            format: "date >= %@ AND date < %@",
+            format: "userID == %@ AND date >= %@ AND date < %@",
+            userID,
             startOfMonth as NSDate,
             startOfNextMonth as NSDate
         )
+
 
         do {
             let expenses = try context.fetch(expenseRequest)
@@ -527,10 +552,14 @@ struct HomeView: View {
             errorMessage = "Unable to load monthly spending."
             print("Dashboard expense fetch error: \(error.localizedDescription)")
         }
-        
-        
-        // Fetch the five most recent expenses
+       
+        // Fetch the five most recent expenses for this user.
        let recentRequest = Expense.fetchRequest()
+
+       recentRequest.predicate = NSPredicate(
+           format: "userID == %@",
+           userID
+       )
 
        recentRequest.sortDescriptors = [
            NSSortDescriptor(key: "date", ascending: false)
@@ -538,23 +567,23 @@ struct HomeView: View {
 
        recentRequest.fetchLimit = 5
 
+
        do {
            recentExpenses = try context.fetch(recentRequest)
        } catch {
            errorMessage = "Unable to load recent expenses."
            print("Recent expense fetch error: \(error.localizedDescription)")
        }
-
         
+        // Fetch this user's budget for the current month.
+       let budgetRequest = Budget.fetchRequest()
 
-        // Fetch this month's budget
-        let budgetRequest = Budget.fetchRequest()
-
-        budgetRequest.predicate = NSPredicate(
-            format: "month == %d AND year == %d",
-            month,
-            year
-        )
+       budgetRequest.predicate = NSPredicate(
+           format: "userID == %@ AND month == %d AND year == %d",
+           userID,
+           month,
+           year
+       )
 
         do {
             

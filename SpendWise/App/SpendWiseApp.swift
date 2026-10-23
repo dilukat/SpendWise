@@ -13,14 +13,56 @@ struct SpendWiseApp: App {
 
     @StateObject private var appState = AppState()
 
+    @AppStorage("faceIDEnabled")
+    private var faceIDEnabled = false
+
+    @State private var isAppUnlocked = false
+    @State private var hasEnteredBackground = false
+
     init() {
         FirebaseApp.configure()
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(appState)
+            Group {
+                if faceIDEnabled && !isAppUnlocked {
+                    AppLockView {
+                        isAppUnlocked = true
+                    }
+                } else {
+                    RootView()
+                        .environmentObject(appState)
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                switch newPhase {
+                case .background:
+                    hasEnteredBackground = true
+                    print("SpendWise entered background.")
+
+                case .active:
+                    if hasEnteredBackground && faceIDEnabled {
+                        isAppUnlocked = false
+                        print("SpendWise locked after returning.")
+                    }
+                    hasEnteredBackground = false
+
+                default:
+                    break
+                }
+            }
+            .onChange(of: faceIDEnabled) { _, isEnabled in
+                if isEnabled {
+                    isAppUnlocked = false
+                } else {
+                    isAppUnlocked = true
+                }
+            }
         }
     }
+
+    @Environment(\.scenePhase) private var scenePhase
 }
+
+

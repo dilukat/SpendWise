@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import FirebaseAuth
 
 struct EditExpenseView: View {
     @Environment(\.dismiss) private var dismiss
@@ -85,6 +86,7 @@ struct EditExpenseView: View {
         }
     }
 
+    
     private func saveChanges() {
         guard let newAmount = Double(
             amount.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -93,28 +95,50 @@ struct EditExpenseView: View {
             return
         }
 
+        guard let userID = FirebaseService.shared.currentUser?.uid,
+              expense.userID == userID else {
+            errorMessage = "Please log in to update this expense."
+            return
+        }
+
         expense.amount = newAmount
         expense.category = category
         expense.merchant = merchant.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
-        
-        
-        // Save the updated expense to Core Data
-       CoreDataService.shared.saveContext()
+        expense.isSynced = false
 
-       // Recheck the monthly budget threshold
-       ExpenseViewModel().checkCurrentMonthBudgetAlert()
+        // Save the changes locally first.
+        CoreDataService.shared.saveContext()
 
-       // Notify HistoryView and the dashboard to refresh
-       NotificationCenter.default.post(
-           name: Notification.Name("ExpenseDidChange"),
-           object: nil
-       )
+        // Recheck the monthly budget threshold.
+        ExpenseViewModel().checkCurrentMonthBudgetAlert()
 
-       // Close the edit screen
-       dismiss()
+        // Notify views that the expense has changed.
+        NotificationCenter.default.post(
+            name: Notification.Name("ExpenseDidChange"),
+            object: nil
+        )
+
+        // Upload the updated expense.
+        Task { @MainActor in
+            do {
+                try await FirestoreSyncService.shared.uploadExpense(expense)
+
+                // Mark synced only after the cloud upload succeeds.
+                expense.isSynced = true
+                CoreDataService.shared.saveContext()
+
+                print("Expense updated and synced to Firestore.")
+                dismiss()
+            } catch {
+                errorMessage =
+                    "Changes saved locally, but cloud sync failed: \(error.localizedDescription)"
+                print("Expense update sync failed: \(error.localizedDescription)")
+            }
+        }
     }
+
 }
 
 #Preview {
