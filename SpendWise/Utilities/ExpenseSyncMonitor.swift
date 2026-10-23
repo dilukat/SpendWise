@@ -43,6 +43,11 @@ final class ExpenseSyncMonitor: ObservableObject {
                 .uploadPendingExpenses()
 
             print("Automatic sync: \(uploadedExpenses) pending expenses uploaded.")
+            
+            let deletedExpenses = try await FirestoreSyncService.shared
+                .syncPendingExpenseDeletions()
+
+            print("Automatic sync: \(deletedExpenses) pending deletions completed.")
 
             // Upload local monthly and category budgets.
             let budgetResult = try await FirestoreSyncService.shared

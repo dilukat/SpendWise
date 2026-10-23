@@ -463,6 +463,11 @@ struct HomeView: View {
             .onAppear {
                 refreshDashboard()
             }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    refreshDashboard()
+                }
+            }
             .onReceive(
                 NotificationCenter.default.publisher(
                     for: Notification.Name("ExpenseDidChange")

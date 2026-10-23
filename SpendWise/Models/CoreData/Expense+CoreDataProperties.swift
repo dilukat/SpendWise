@@ -29,6 +29,7 @@ extension Expense {
     @NSManaged public var merchant: String?
     @NSManaged public var receiptData: Data?
     @NSManaged public var userID: String?
+    @NSManaged public var isPendingDeletion: Bool
 }
 
 extension Expense : Identifiable {

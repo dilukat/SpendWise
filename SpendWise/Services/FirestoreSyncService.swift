@@ -103,7 +103,7 @@ final class FirestoreSyncService {
         )
 
         request.predicate = NSPredicate(
-            format: "userID == %@ AND isSynced == NO",
+            format: "userID == %@ AND isSynced == NO AND isPendingDeletion == NO",
             userID
         )
 
@@ -172,6 +172,68 @@ final class FirestoreSyncService {
             .delete()
 
         print("Expense deleted from Firestore: \(expenseID)")
+    }
+
+    func syncPendingExpenseDeletions() async throws -> Int {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            throw NSError(
+                domain: "FirestoreSyncService",
+                code: 401,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "Please log in before syncing pending deletions."
+                ]
+            )
+        }
+
+        let context = CoreDataService.shared.viewContext
+        let request = NSFetchRequest<Expense>(entityName: "Expense")
+
+        request.predicate = NSPredicate(
+            format: "userID == %@ AND isPendingDeletion == YES",
+            userID
+        )
+
+        let pendingDeletions = try context.fetch(request)
+        var deletedCount = 0
+
+        for expense in pendingDeletions {
+            // Never continue syncing if the account changes.
+            guard Auth.auth().currentUser?.uid == userID else {
+                print("Account changed; stopping pending-deletion sync.")
+                break
+            }
+
+            do {
+                // Firestore deletion is safe to retry if the document
+                // has already been deleted.
+                try await deleteExpenseFromFirestore(expense)
+
+                // Check ownership again before modifying local data.
+                guard Auth.auth().currentUser?.uid == userID,
+                      expense.userID == userID else {
+                    print("Account changed; pending deletion retained.")
+                    break
+                }
+
+                context.delete(expense)
+                try context.save()
+
+                deletedCount += 1
+                print(
+                    "Pending expense deletion synced: \(expense.expenseID ?? "Unknown")"
+                )
+
+            } catch {
+                // Keep the record marked for deletion so it can retry.
+                print(
+                    "Pending deletion failed: \(error.localizedDescription)"
+                )
+            }
+        }
+
+        print("Pending deletion sync finished. Deleted: \(deletedCount)")
+        return deletedCount
     }
 
 

@@ -106,6 +106,33 @@ final class ExpenseViewModel: ObservableObject {
         }    }
     
     
+//    func deleteExpense(_ expense: Expense) {
+//        guard let userID = FirebaseService.shared.currentUser?.uid,
+//              expense.userID == userID else {
+//            errorMessage = "You can only delete your own expenses."
+//            return
+//        }
+//
+//        Task { @MainActor in
+//            do {
+//                try await FirestoreSyncService.shared
+//                    .deleteExpenseFromFirestore(expense)
+//
+//                let context = CoreDataService.shared.viewContext
+//                context.delete(expense)
+//                CoreDataService.shared.saveContext()
+//
+//                fetchExpenses()
+//                checkCurrentMonthBudgetAlert()
+//
+//                print("Expense deleted successfully from local and cloud storage.")
+//            } catch {
+//                errorMessage = "Could not delete expense from cloud: \(error.localizedDescription)"
+//                print("Expense deletion failed: \(error.localizedDescription)")
+//            }
+//        }
+//    }
+    
     func deleteExpense(_ expense: Expense) {
         guard let userID = FirebaseService.shared.currentUser?.uid,
               expense.userID == userID else {
@@ -113,25 +140,51 @@ final class ExpenseViewModel: ObservableObject {
             return
         }
 
+        let context = CoreDataService.shared.viewContext
+
+        // Mark the expense for deletion before contacting Firestore.
+        expense.isPendingDeletion = true
+
+        do {
+            try context.save()
+        } catch {
+            expense.isPendingDeletion = false
+            errorMessage = "Could not save the deletion request."
+            print("Failed to mark expense for deletion: \(error.localizedDescription)")
+            return
+        }
+
+        // Hide the pending deletion from the History screen.
+        fetchExpenses()
+
         Task { @MainActor in
             do {
                 try await FirestoreSyncService.shared
                     .deleteExpenseFromFirestore(expense)
 
-                let context = CoreDataService.shared.viewContext
+                // Do not modify local data if the account changed.
+                guard FirebaseService.shared.currentUser?.uid == userID else {
+                    print("Account changed; pending deletion retained.")
+                    return
+                }
+
                 context.delete(expense)
-                CoreDataService.shared.saveContext()
+                try context.save()
 
                 fetchExpenses()
                 checkCurrentMonthBudgetAlert()
 
-                print("Expense deleted successfully from local and cloud storage.")
+                errorMessage = ""
+                print("Expense deleted from local and cloud storage.")
+
             } catch {
-                errorMessage = "Could not delete expense from cloud: \(error.localizedDescription)"
-                print("Expense deletion failed: \(error.localizedDescription)")
+                // Keep the record for a future deletion retry.
+                errorMessage = "Deletion is pending until synchronization succeeds."
+                print("Expense deletion pending: \(error.localizedDescription)")
             }
         }
     }
+
 
     
 //    func fetchExpenses() {
@@ -172,8 +225,13 @@ final class ExpenseViewModel: ObservableObject {
         let context = CoreDataService.shared.viewContext
         let request = Expense.fetchRequest()
 
+//        request.predicate = NSPredicate(
+//            format: "userID == %@",
+//            userID
+//        )
+        
         request.predicate = NSPredicate(
-            format: "userID == %@",
+            format: "userID == %@ AND isPendingDeletion == NO",
             userID
         )
 
