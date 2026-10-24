@@ -17,7 +17,6 @@ final class FirebaseService {
     private init() {}
 
     // Register
-
     func register(
         fullName: String,
         email: String,
@@ -36,7 +35,6 @@ final class FirebaseService {
     }
 
     // Login
-
     func login(
         email: String,
         password: String
@@ -49,21 +47,18 @@ final class FirebaseService {
     }
 
     // Logout
-
     func logout() throws {
 
         try Auth.auth().signOut()
     }
 
     // Current User
-
     var currentUser: FirebaseAuth.User? {
 
         Auth.auth().currentUser
     }
 
     // Authentication State
-
     var isAuthenticated: Bool {
 
         Auth.auth().currentUser != nil

@@ -5,7 +5,6 @@
 //  Created by Theekshana on 2026-10-20.
 //
 
-
 import SwiftUI
 
 struct AppLockView: View {

@@ -30,8 +30,6 @@ struct RegisterView: View {
 
                 VStack(spacing: 24) {
 
-                    // MARK: - Header
-
                     VStack(spacing: 8) {
 
                         Text("SpendWise")
@@ -48,8 +46,6 @@ struct RegisterView: View {
                             .foregroundStyle(Color.spendWiseSecondaryText)
                     }
                     .padding(.top, 20)
-
-                    // MARK: - Form
 
                     VStack(spacing: 16) {
 
@@ -70,8 +66,6 @@ struct RegisterView: View {
                             .textFieldStyle(.roundedBorder)
                     }
 
-                    // MARK: - Error Message
-
                     if !errorMessage.isEmpty {
 
                         Text(errorMessage)
@@ -79,8 +73,6 @@ struct RegisterView: View {
                             .foregroundStyle(Color.spendWiseDanger)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
-                    // MARK: - Terms
 
                     HStack(alignment: .top, spacing: 8) {
 
@@ -94,7 +86,6 @@ struct RegisterView: View {
                         Spacer()
                     }
 
-                    // MARK: - Create Account
 
                     Button {
 
@@ -128,7 +119,7 @@ struct RegisterView: View {
                     )
                     .disabled(isLoading)
 
-                    // MARK: - Login
+                    // Login
 
                     Button {
 
@@ -157,7 +148,7 @@ struct RegisterView: View {
         }
     }
 
-    // MARK: - Register User
+    // Register User
 
     private func registerUser() async {
 
@@ -222,7 +213,7 @@ struct RegisterView: View {
         isLoading = false
     }
 
-    // MARK: - Firebase Error Handling
+    // Firebase Error Handling
 
     private func firebaseErrorMessage(_ error: Error) -> String {
 

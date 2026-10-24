@@ -270,7 +270,7 @@ struct HomeView: View {
                     
                     
                     
-                    // MARK: - Category Budget Overview
+                    // Category Budget Overview
 
                    VStack(alignment: .leading, spacing: 16) {
 
@@ -360,7 +360,7 @@ struct HomeView: View {
 
                     
                     
-                    // MARK: - Recent Expenses
+                    // Recent Expenses
 
                    VStack(alignment: .leading, spacing: 16) {
 
@@ -491,7 +491,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Refresh Dashboard
+    // Refresh Dashboard
 
     private func refreshDashboard() {
         let context = CoreDataService.shared.viewContext

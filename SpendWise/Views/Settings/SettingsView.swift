@@ -11,17 +11,11 @@ struct SettingsView: View {
 
     @EnvironmentObject var appState: AppState
 
-    // MARK: - Logout
-
     @State private var showLogoutConfirmation = false
-
-    // MARK: - Cloud Sync
 
     @State private var isSyncingExpenses = false
     @State private var syncMessage = ""
     @State private var syncError = false
-
-    // MARK: - Daily Reminder
 
     @AppStorage("dailyReminderEnabled")
     private var dailyReminderEnabled = false
@@ -36,8 +30,6 @@ struct SettingsView: View {
         from: DateComponents(hour: 20, minute: 0)
     ) ?? Date()
 
-    // MARK: - Face ID
-
     @AppStorage("faceIDEnabled")
     private var faceIDEnabled = false
 
@@ -45,14 +37,11 @@ struct SettingsView: View {
 
     private let firebaseService = FirebaseService.shared
 
-    // MARK: - View
-
     var body: some View {
         NavigationStack {
             Form {
 
-                // MARK: Account & Sync
-
+                // Account & Sync
                 Section("Account") {
 
                     
@@ -98,7 +87,7 @@ struct SettingsView: View {
 
                 }
 
-                // MARK: Security
+                // Security
 
                 Section("Security") {
                     Toggle(
@@ -152,7 +141,7 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: Daily Spending Reminder
+                // Daily Spending Reminder
 
                 Section("Daily Spending Reminder") {
                     Toggle(
@@ -264,7 +253,7 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Sync All Data
+    // Sync All Data
 
     
     @MainActor
@@ -332,7 +321,7 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - Logout
+    // Logout
 
     private func logout() {
         do {

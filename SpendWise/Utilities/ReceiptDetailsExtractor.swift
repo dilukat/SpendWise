@@ -28,8 +28,7 @@ struct ReceiptDetailsExtractor {
         )
     }
 
-    // MARK: - Merchant
-
+    // Merchant
     private static func extractMerchant(from lines: [String]) -> String? {
         let ignoredWords = [
             "receipt", "invoice", "tax invoice",
@@ -61,9 +60,7 @@ struct ReceiptDetailsExtractor {
         return nil
     }
 
-    // MARK: - Amount
-
-    
+    // Amount
     private static func extractAmount(from lines: [String]) -> Double? {
 
         // First, look for amounts on lines that identify a payable total.
@@ -110,7 +107,7 @@ struct ReceiptDetailsExtractor {
 
 
     private static func lastAmount(in text: String) -> Double? {
-        // Supports common formats such as:
+        // Supports common formats
         // 1250.00, 1,250.00, Rs. 1250.00
         let pattern = #"(?<!\d)\d[\d,]*(?:\.\d{1,2})?(?!\d)"#
 

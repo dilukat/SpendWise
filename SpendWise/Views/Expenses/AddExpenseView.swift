@@ -36,8 +36,6 @@ struct AddExpenseView: View {
 
             VStack(alignment: .leading, spacing: 24) {
 
-                // MARK: - Header
-
                 VStack(alignment: .leading, spacing: 6) {
 
                     Text("Add Expense")
@@ -51,7 +49,7 @@ struct AddExpenseView: View {
                 }
                 
                 
-                // MARK: - Receipt Image
+                // Receipt Image
 
                 VStack(alignment: .leading, spacing: 12) {
 
@@ -151,8 +149,7 @@ struct AddExpenseView: View {
 
                     
                     ////////////////////////
-                    ///
-                    ///
+
                     
                     if let receiptImage {
                         Image(uiImage: receiptImage)
@@ -328,7 +325,7 @@ struct AddExpenseView: View {
                 }
 
 
-                // MARK: - Amount
+                // Amount
 
                 VStack(alignment: .leading, spacing: 10) {
 
@@ -360,7 +357,7 @@ struct AddExpenseView: View {
                     )
                 }
 
-                // MARK: - Category
+                // Category
 
                 VStack(alignment: .leading, spacing: 10) {
 
@@ -393,7 +390,7 @@ struct AddExpenseView: View {
                     )
                 }
 
-                // MARK: - Merchant
+                // Merchant
 
                 VStack(alignment: .leading, spacing: 10) {
 
@@ -464,7 +461,7 @@ struct AddExpenseView: View {
                 .padding(.vertical, 8)
                 
 
-                // MARK: - Error
+                // Error
 
                 if !viewModel.errorMessage.isEmpty {
 
@@ -473,7 +470,7 @@ struct AddExpenseView: View {
                         .foregroundStyle(Color.spendWiseDanger)
                 }
 
-                // MARK: - Save Button
+                // Save Button
 
                 Button {
 

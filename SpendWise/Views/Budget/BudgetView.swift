@@ -153,7 +153,7 @@ struct BudgetView: View {
                    .cornerRadius(18)
                     
                     
-                    //MARK: Validation Error Banner
+                    //Validation Error Banner
                    if !viewModel.errorMessage.isEmpty {
                        HStack(alignment: .top, spacing: 10) {
                            Image(systemName: "exclamationmark.circle.fill")
@@ -179,7 +179,7 @@ struct BudgetView: View {
                    }
 
                     
-                    // MARK: - Category Budgets
+                    // Category Budgets
 
                    VStack(alignment: .leading, spacing: 16) {
 

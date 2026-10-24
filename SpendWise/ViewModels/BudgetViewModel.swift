@@ -13,8 +13,6 @@ import FirebaseAuth
 @MainActor
 final class BudgetViewModel: ObservableObject {
 
-    // MARK: - Published Properties
-
     @Published var totalBudget = ""
     @Published var errorMessage = ""
     @Published var successMessage = ""
@@ -22,9 +20,6 @@ final class BudgetViewModel: ObservableObject {
     
     @Published var currentMonthBudget: Budget?
     @Published var currentMonthSpending: Double = 0
-    
-    
-    // MARK: - Category Budget Properties
 
     let categories = [
         "Food",
@@ -42,15 +37,12 @@ final class BudgetViewModel: ObservableObject {
     @Published var categoryBudgets: [CategoryBudget] = []
     @Published var categorySpending: [String: Double] = [:]
 
-    // MARK: - Initialization
-
     init() {
         refreshData()
     }
     
     
-    // MARK: - Fetch Category Budgets
-   
+    // Fetch Category Budgets
     func fetchCategoryBudgets() {
         guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid,
               let currentBudget = currentMonthBudget,
@@ -80,9 +72,7 @@ final class BudgetViewModel: ObservableObject {
     }
 
 
-   // MARK: - Calculate Category Spending
-
-   
+   // Calculate Category Spending
     func calculateCategorySpending() {
         guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
             categorySpending = [:]
@@ -134,9 +124,7 @@ final class BudgetViewModel: ObservableObject {
     }
 
 
-   // MARK: - Save Category Budget
-
-   
+   // Save Category Budget
     func saveCategoryBudget() {
         let trimmedAmount = categoryLimit.trimmingCharacters(
             in: .whitespacesAndNewlines
@@ -250,8 +238,7 @@ final class BudgetViewModel: ObservableObject {
     }
 
 
-   // MARK: - Category Budget Lookup
-
+   // Category Budget Lookup
    func budgetLimit(for category: String) -> Double {
        categoryBudgets.first {
            $0.category == category
@@ -263,8 +250,7 @@ final class BudgetViewModel: ObservableObject {
    }
 
 
-    // MARK: - Fetch Budgets
-
+    // Fetch Budgets
     func fetchBudgets() {
         guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
             budgets = []
@@ -297,8 +283,7 @@ final class BudgetViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Current Month Budget
-
+    // Current Month Budget
     func updateCurrentMonthBudget() {
         let calendar = Calendar.current
         let now = Date()
@@ -311,10 +296,7 @@ final class BudgetViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Save Monthly Budget
-
-    
-    
+    // Save Monthly Budget
     func saveMonthlyBudget() {
         guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
             errorMessage = "Please log in to save a budget."
@@ -423,8 +405,7 @@ final class BudgetViewModel: ObservableObject {
     }
 
     
-    // MARK: - Refresh Budget Data
-
+    // Refresh Budget Data
    func refreshData() {
        fetchBudgets()
        calculateCurrentMonthSpending()
@@ -433,9 +414,7 @@ final class BudgetViewModel: ObservableObject {
    }
 
 
-    // MARK: - Calculate Current Month Spending
-
-    
+    // Calculate Current Month Spending
     func calculateCurrentMonthSpending() {
         guard let userID = FirebaseAuth.Auth.auth().currentUser?.uid else {
             currentMonthSpending = 0
