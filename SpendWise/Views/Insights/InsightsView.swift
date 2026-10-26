@@ -7,12 +7,17 @@
  
 import SwiftUI
 import Charts
+import MapKit
+internal import CoreData
 
 struct InsightsView: View {
 
     @StateObject private var expenseViewModel = ExpenseViewModel()
     @StateObject private var budgetViewModel = BudgetViewModel()
     @State private var selectedMonth = Date()
+    
+    @State private var selectedLocationExpenseID: String?
+    @State private var isShowingLocationDetails = false
 
     private let calendar = Calendar.current
 
@@ -78,6 +83,25 @@ struct InsightsView: View {
         return expenseViewModel.expenses.filter { expense in
             guard let date = expense.date else { return false }
             return date >= startOfMonth && date < startOfNextMonth
+        }
+    }
+    
+    private var expensesWithLocation: [Expense] {
+        monthExpenses.filter { expense in
+            let latitude = expense.latitude
+            let longitude = expense.longitude
+
+            // Exclude expenses without valid saved coordinates.
+            guard latitude != 0 || longitude != 0 else {
+                return false
+            }
+
+            guard (-90...90).contains(latitude),
+                  (-180...180).contains(longitude) else {
+                return false
+            }
+
+            return true
         }
     }
 
@@ -512,6 +536,99 @@ struct InsightsView: View {
                     
                 }
                 .padding()
+                
+                
+                // Expense Locations Map
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Expense Locations")
+                        .font(.headline)
+
+                    if expensesWithLocation.isEmpty {
+                        ContentUnavailableView(
+                            "No Expense Locations",
+                            systemImage: "map",
+                            description: Text(
+                                "No expenses with saved coordinates were found for \(selectedMonthTitle)."
+                            )
+                        )
+                        .frame(minHeight: 180)
+                    } else {
+                        Map {
+                            ForEach(
+                                expensesWithLocation,
+                                id: \.objectID
+                            ) { expense in
+                                Annotation(
+                                    expense.merchant ?? "Expense",
+                                    coordinate: CLLocationCoordinate2D(
+                                        latitude: expense.latitude,
+                                        longitude: expense.longitude
+                                    )
+                                ) {
+                                    Button {
+                                        selectedLocationExpenseID =
+                                            expense.objectID.uriRepresentation()
+                                                .absoluteString
+                                        isShowingLocationDetails = true
+                                    } label: {
+                                        Image(systemName: "mappin.circle.fill")
+                                            .font(.title)
+                                            .foregroundStyle(Color.spendWiseTeal)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                        .frame(height: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .sheet(isPresented: $isShowingLocationDetails) {
+                            if let expense = expensesWithLocation.first(
+                                where: {
+                                    $0.objectID.uriRepresentation()
+                                        .absoluteString == selectedLocationExpenseID
+                                }
+                            ) {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text(expense.merchant ?? "Expense")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+
+                                    Text(
+                                        expense.amount,
+                                        format: .currency(code: "LKR")
+                                    )
+                                    .font(.title3)
+
+                                    Text("Category: \(expense.category ?? "Other")")
+
+                                    if let date = expense.date {
+                                        Text(date.formatted(date: .abbreviated, time: .shortened))
+                                    }
+
+                                    Text(
+                                        "Latitude: \(expense.latitude.formatted())"
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                    Text(
+                                        "Longitude: \(expense.longitude.formatted())"
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                    Spacer()
+                                }
+                                .padding()
+                                .presentationDetents([.medium])
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+
             }
             .background(Color.spendWiseBackground)
             .navigationTitle("Insights")

@@ -11,11 +11,20 @@ struct RootView: View {
 
     @EnvironmentObject var appState: AppState
 
+    @AppStorage("hasCompletedOnboarding")
+    private var hasCompletedOnboarding = false
+
     var body: some View {
-        if appState.isAuthenticated {
-            MainTabView()
-        } else {
-            LoginView()
+        Group {
+            if !hasCompletedOnboarding {
+                OnboardingView {
+                    hasCompletedOnboarding = true
+                }
+            } else if appState.isAuthenticated {
+                MainTabView()
+            } else {
+                LoginView()
+            }
         }
     }
 }
@@ -23,3 +32,4 @@ struct RootView: View {
 #Preview {
     RootView()
 }
+

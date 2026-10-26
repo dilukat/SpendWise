@@ -223,29 +223,29 @@ struct AddExpenseView: View {
                     .disabled(receiptImage == nil || isLoadingReceipt)
 
                     
-                    if !recognizedReceiptText.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Recognized Text")
-                                .font(.headline)
-                                .foregroundStyle(Color.spendWiseText)
-
-                            ForEach(
-                                Array(recognizedReceiptText.enumerated()),
-                                id: \.offset
-                            ) { _, line in
-                                Text(line)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color.spendWiseSecondaryText)
-                                    .frame(
-                                        maxWidth: .infinity,
-                                        alignment: .leading
-                                    )
-                            }
-                        }
-                        .padding()
-                        .background(Color.spendWiseCard)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
+//                    if !recognizedReceiptText.isEmpty {
+//                        VStack(alignment: .leading, spacing: 8) {
+//                            Text("Recognized Text")
+//                                .font(.headline)
+//                                .foregroundStyle(Color.spendWiseText)
+//
+//                            ForEach(
+//                                Array(recognizedReceiptText.enumerated()),
+//                                id: \.offset
+//                            ) { _, line in
+//                                Text(line)
+//                                    .font(.subheadline)
+//                                    .foregroundStyle(Color.spendWiseSecondaryText)
+//                                    .frame(
+//                                        maxWidth: .infinity,
+//                                        alignment: .leading
+//                                    )
+//                            }
+//                        }
+//                        .padding()
+//                        .background(Color.spendWiseCard)
+//                        .clipShape(RoundedRectangle(cornerRadius: 12))
+//                    }
                     
                     
                     if extractedMerchant != nil ||

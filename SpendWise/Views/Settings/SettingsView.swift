@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct SettingsView: View {
 
     @EnvironmentObject var appState: AppState
 
     @State private var showLogoutConfirmation = false
+    @State private var showOnboardingAgain = false
 
     @State private var isSyncingExpenses = false
     @State private var syncMessage = ""
@@ -36,6 +38,17 @@ struct SettingsView: View {
     @State private var faceIDMessage = ""
 
     private let firebaseService = FirebaseService.shared
+    
+    private var currentUserName: String {
+        let name = firebaseService.currentUser?.displayName?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return (name?.isEmpty == false) ? name! : "SpendWise User"
+    }
+
+    private var currentUserEmail: String {
+        firebaseService.currentUser?.email ?? "No email available"
+    }
 
     var body: some View {
         NavigationStack {
@@ -44,6 +57,16 @@ struct SettingsView: View {
                 // Account & Sync
                 Section("Account") {
 
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(currentUserName)
+                            .font(.headline)
+                            .foregroundStyle(Color.primary)
+
+                        Text(currentUserEmail)
+                            .font(.subheadline)
+                            .foregroundStyle(Color.spendWiseSecondaryText)
+                    }
+                    .padding(.vertical, 8)
                     
                     Button {
                         Task {
@@ -209,6 +232,22 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                // App Introduction
+                Section("About SpendWise") {
+                    Button {
+                        showOnboardingAgain = true
+                    } label: {
+                        Label {
+                            Text("Replay Onboarding")
+                        } icon: {
+                            Image(systemName: "book.pages")
+                                .foregroundStyle(Color.spendWiseTeal)
+                                .frame(width: 24, alignment: .leading)
+                        }
+                    }
+                }
+                
             }
             .onAppear {
                 var components = DateComponents()
@@ -237,6 +276,11 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showOnboardingAgain) {
+                OnboardingView {
+                    showOnboardingAgain = false
+                }
+            }
             .confirmationDialog(
                 "Log Out",
                 isPresented: $showLogoutConfirmation,
@@ -271,7 +315,7 @@ struct SettingsView: View {
         }
 
         do {
-            // 1. Upload & delete pending expenses.
+            // Upload & delete pending expenses.
             let deletedCount = try await FirestoreSyncService.shared
                 .syncPendingExpenseDeletions()
 
@@ -282,7 +326,7 @@ struct SettingsView: View {
 
             print("Pending expenses uploaded: \(uploadedCount)")
 
-            // 2. Upload local monthly and category budgets.
+            // Upload local monthly and category budgets.
             let budgetUploadResult =
                 try await FirestoreSyncService.shared
                     .uploadLocalBudgetsAndCategoryBudgets()
@@ -290,7 +334,7 @@ struct SettingsView: View {
             print("Monthly budgets uploaded: \(budgetUploadResult.budgets)")
             print("Category budgets uploaded: \(budgetUploadResult.categoryBudgets)")
 
-            // 3. Download the latest cloud data.
+            // Download the latest cloud data.
             let expenseCount =
                 try await FirestoreSyncService.shared.downloadExpenses()
 
