@@ -30,6 +30,7 @@ struct HomeView: View {
     @State private var categoryBudgetSummaries: [CategoryBudgetSummary] = []
     @State private var categorySpending: [String: Double] = [:]
     @State private var predictedMonthlySpending: Double?
+    @State private var isRefreshingFromCloud = false
 
     private var remainingBudget: Double {
         monthlyBudget - totalSpending
@@ -461,11 +462,15 @@ struct HomeView: View {
             .background(Color.spendWiseBackground)
             .navigationTitle("Home")
             .onAppear {
-                refreshDashboard()
+                Task {
+                    await syncAndRefreshDashboard()
+                }
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    refreshDashboard()
+                    Task {
+                        await syncAndRefreshDashboard()
+                    }
                 }
             }
             .onReceive(
@@ -477,8 +482,10 @@ struct HomeView: View {
             }
             .onChange(of: appState.currentUserID) { _, newUserID in
                 if newUserID != nil {
-                    refreshDashboard()
-                } else {
+                    Task {
+                        await syncAndRefreshDashboard()
+                    }
+                }else {
                     totalSpending = 0
                     monthlyBudget = 0
                     recentExpenses = []
@@ -491,6 +498,38 @@ struct HomeView: View {
         }
     }
 
+    
+    @MainActor
+    private func syncAndRefreshDashboard() async {
+        guard Auth.auth().currentUser?.uid != nil else {
+            refreshDashboard()
+            return
+        }
+
+        guard !isRefreshingFromCloud else {
+            return
+        }
+
+        isRefreshingFromCloud = true
+        defer {
+            isRefreshingFromCloud = false
+        }
+
+        do {
+            _ = try await FirestoreSyncService.shared.downloadBudgets()
+
+            _ = try await FirestoreSyncService.shared.downloadCategoryBudgets()
+
+            _ = try await FirestoreSyncService.shared.downloadExpenses()
+
+        } catch {
+            errorMessage = "Unable to sync dashboard data."
+            print("Dashboard cloud sync error: \(error.localizedDescription)")
+        }
+        refreshDashboard()
+    }
+
+    
     // Refresh Dashboard
 
     private func refreshDashboard() {

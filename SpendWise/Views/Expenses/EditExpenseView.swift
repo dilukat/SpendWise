@@ -77,6 +77,7 @@ struct EditExpenseView: View {
         }
         .navigationTitle("Edit Expense")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {

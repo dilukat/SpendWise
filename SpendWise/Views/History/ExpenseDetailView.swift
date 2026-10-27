@@ -80,13 +80,13 @@ struct ExpenseDetailView: View {
                         icon: "clock"
                     )
 
-                    Divider()
-
-                    detailRow(
-                        title: "Expense ID",
-                        value: expense.expenseID ?? "Unavailable",
-                        icon: "number"
-                    )
+//                    Divider()
+//
+//                    detailRow(
+//                        title: "Expense ID",
+//                        value: expense.expenseID ?? "Unavailable",
+//                        icon: "number"
+//                    )
                 }
                 .padding(.horizontal)
                 .background(Color.spendWiseCard)
