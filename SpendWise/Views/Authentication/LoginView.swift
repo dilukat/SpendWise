@@ -150,35 +150,70 @@ struct LoginView: View {
 
     // Login
 
+//    private func loginUser() async {
+//
+//        errorMessage = ""
+//
+//        let trimmedEmail = email
+//            .trimmingCharacters(
+//                in: .whitespacesAndNewlines
+//            )
+//
+//        // Validate email
+//
+//        guard !trimmedEmail.isEmpty else {
+//
+//            errorMessage = "Please enter your email address."
+//            return
+//        }
+//
+//        // Validate password
+//
+//        guard !password.isEmpty else {
+//
+//            errorMessage = "Please enter your password."
+//            return
+//        }
+//
+//        isLoading = true
+//
+//        do {
+//
+//            try await firebaseService.login(
+//                email: trimmedEmail,
+//                password: password
+//            )
+//
+//            print("Login successful. User authenticated.")
+//
+//        } catch {
+//
+//            errorMessage = firebaseErrorMessage(error)
+//        }
+//
+//        isLoading = false
+//    }
+    
+    
     private func loginUser() async {
 
         errorMessage = ""
 
-        let trimmedEmail = email
-            .trimmingCharacters(
-                in: .whitespacesAndNewlines
-            )
-
-        // Validate email
-
-        guard !trimmedEmail.isEmpty else {
-
-            errorMessage = "Please enter your email address."
+        if let validationError = AuthenticationValidator.validateLogin(
+            email: email,
+            password: password
+        ) {
+            errorMessage = validationError
             return
         }
 
-        // Validate password
-
-        guard !password.isEmpty else {
-
-            errorMessage = "Please enter your password."
-            return
-        }
+        let trimmedEmail = email.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
 
         isLoading = true
 
         do {
-
             try await firebaseService.login(
                 email: trimmedEmail,
                 password: password
@@ -187,50 +222,12 @@ struct LoginView: View {
             print("Login successful. User authenticated.")
 
         } catch {
-
-            errorMessage = firebaseErrorMessage(error)
+            errorMessage = FirebaseAuthErrorMapper.loginMessage(
+                for: error
+            )
         }
 
         isLoading = false
-    }
-
-    // Firebase Error Messages
-
-    private func firebaseErrorMessage(
-        _ error: Error
-    ) -> String {
-
-        guard let authError = error as NSError? else {
-
-            return "Something went wrong. Please try again."
-        }
-
-        switch authError.code {
-
-        case AuthErrorCode.invalidEmail.rawValue:
-
-            return "Please enter a valid email address."
-
-        case AuthErrorCode.wrongPassword.rawValue:
-
-            return "Incorrect email or password."
-
-        case AuthErrorCode.userNotFound.rawValue:
-
-            return "No account was found with this email."
-
-        case AuthErrorCode.networkError.rawValue:
-
-            return "Network error. Please check your internet connection."
-
-        case AuthErrorCode.userDisabled.rawValue:
-
-            return "This account has been disabled."
-
-        default:
-
-            return "Unable to sign in. Please check your details and try again."
-        }
     }
 }
 

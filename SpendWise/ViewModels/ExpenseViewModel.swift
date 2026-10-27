@@ -10,7 +10,6 @@ internal import Combine
 internal import CoreData
 import FirebaseAuth
 
-@MainActor
 final class ExpenseViewModel: ObservableObject {
 
     @Published var amount = ""
@@ -43,10 +42,12 @@ final class ExpenseViewModel: ObservableObject {
     }
     
     func saveExpense() {
-        guard let expenseAmount = Double(amount),
-              expenseAmount.isFinite,
-              expenseAmount > 0 else {
-            errorMessage = "Please enter a valid amount."
+        if let validationError = ExpenseValidator.validateAmount(amount) {
+                errorMessage = validationError
+                return
+        }
+
+        guard let expenseAmount = Double(amount) else {
             return
         }
 

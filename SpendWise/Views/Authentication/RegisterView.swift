@@ -150,9 +150,83 @@ struct RegisterView: View {
 
     // Register User
 
+//    private func registerUser() async {
+//
+//        errorMessage = ""
+//
+//        let trimmedName = fullName.trimmingCharacters(
+//            in: .whitespacesAndNewlines
+//        )
+//
+//        let trimmedEmail = email.trimmingCharacters(
+//            in: .whitespacesAndNewlines
+//        )
+//
+//        // Validate full name
+//
+//        guard !trimmedName.isEmpty else {
+//
+//            errorMessage = "Please enter your full name."
+//            return
+//        }
+//
+//        // Validate email
+//
+//        guard !trimmedEmail.isEmpty else {
+//
+//            errorMessage = "Please enter your email address."
+//            return
+//        }
+//
+//        // Validate password
+//
+//        guard !password.isEmpty else {
+//
+//            errorMessage = "Please enter a password."
+//            return
+//        }
+//
+//        // Validate password confirmation
+//
+//        guard password == confirmPassword else {
+//
+//            errorMessage = "Passwords do not match."
+//            return
+//        }
+//
+//        isLoading = true
+//
+//        do {
+//
+//            try await firebaseService.register(
+//                fullName: trimmedName,
+//                email: trimmedEmail,
+//                password: password
+//            )
+//
+//        } catch {
+//
+//            errorMessage = firebaseErrorMessage(error)
+//
+//        }
+//
+//        isLoading = false
+//    }
+    
     private func registerUser() async {
 
         errorMessage = ""
+
+        if let validationError =
+            AuthenticationValidator.validateRegistration(
+                fullName: fullName,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
+            ) {
+            errorMessage = validationError
+            return
+        }
 
         let trimmedName = fullName.trimmingCharacters(
             in: .whitespacesAndNewlines
@@ -162,42 +236,9 @@ struct RegisterView: View {
             in: .whitespacesAndNewlines
         )
 
-        // Validate full name
-
-        guard !trimmedName.isEmpty else {
-
-            errorMessage = "Please enter your full name."
-            return
-        }
-
-        // Validate email
-
-        guard !trimmedEmail.isEmpty else {
-
-            errorMessage = "Please enter your email address."
-            return
-        }
-
-        // Validate password
-
-        guard !password.isEmpty else {
-
-            errorMessage = "Please enter a password."
-            return
-        }
-
-        // Validate password confirmation
-
-        guard password == confirmPassword else {
-
-            errorMessage = "Passwords do not match."
-            return
-        }
-
         isLoading = true
 
         do {
-
             try await firebaseService.register(
                 fullName: trimmedName,
                 email: trimmedEmail,
@@ -205,39 +246,12 @@ struct RegisterView: View {
             )
 
         } catch {
-
-            errorMessage = firebaseErrorMessage(error)
-
+            errorMessage = FirebaseAuthErrorMapper.registrationMessage(
+                for: error
+            )
         }
 
         isLoading = false
-    }
-
-    // Firebase Error Handling
-
-    private func firebaseErrorMessage(_ error: Error) -> String {
-
-        guard let authError = error as NSError? else {
-            return "Something went wrong. Please try again."
-        }
-
-        switch authError.code {
-
-        case AuthErrorCode.emailAlreadyInUse.rawValue:
-            return "This email is already registered."
-
-        case AuthErrorCode.invalidEmail.rawValue:
-            return "Please enter a valid email address."
-
-        case AuthErrorCode.weakPassword.rawValue:
-            return "Password is too weak. Please use a stronger password."
-
-        case AuthErrorCode.networkError.rawValue:
-            return "Network error. Please check your internet connection."
-
-        default:
-            return "Unable to create your account. Please try again."
-        }
     }
 }
 
