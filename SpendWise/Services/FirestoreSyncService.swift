@@ -278,17 +278,24 @@ final class FirestoreSyncService {
         var downloadedCount = 0
 
         for document in snapshot.documents {
+            
             let data = document.data()
 
             guard
                 let expenseID = data["expenseID"] as? String,
                 let recordUserID = data["userID"] as? String,
-                recordUserID == userID,
-                let amount = (data["amount"] as? NSNumber)?.doubleValue
+                let amount = (data["amount"] as? NSNumber)?.doubleValue,
+                SyncedExpenseValidator.validate(
+                    expenseID: expenseID,
+                    userID: recordUserID,
+                    expectedUserID: userID,
+                    amount: amount
+                )
             else {
                 print("Skipping invalid expense: \(document.documentID)")
                 continue
             }
+
 
             // Update an existing record or create a new one.
             let expense = expensesByID[expenseID]
@@ -706,20 +713,28 @@ final class FirestoreSyncService {
         var downloadedCount = 0
 
         for document in snapshot.documents {
+            
             let data = document.data()
 
             guard
                 let budgetID = data["budgetID"] as? String,
                 let recordUserID = data["userID"] as? String,
-                recordUserID == userID,
                 let category = data["category"] as? String,
-                !category.isEmpty,
                 let limitValue = data["limit"] as? NSNumber,
-                let monthValue = data["month"] as? NSNumber
+                let monthValue = data["month"] as? NSNumber,
+                SyncedCategoryBudgetValidator.validate(
+                    budgetID: budgetID,
+                    userID: recordUserID,
+                    expectedUserID: userID,
+                    category: category,
+                    limit: limitValue.doubleValue,
+                    month: monthValue.intValue
+                )
             else {
                 print("Skipping invalid category budget: \(document.documentID)")
                 continue
             }
+
 
             // Only attach category budgets to this user's existing monthly budget.
             let monthlyBudgetRequest = NSFetchRequest<Budget>(

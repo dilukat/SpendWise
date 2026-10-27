@@ -126,17 +126,27 @@ final class BudgetViewModel: ObservableObject {
 
    // Save Category Budget
     func saveCategoryBudget() {
-        let trimmedAmount = categoryLimit.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard let amount = Double(trimmedAmount),
-              amount.isFinite,
-              amount > 0 else {
-            errorMessage = "Enter a valid category limit greater than zero."
+//        let trimmedAmount = categoryLimit.trimmingCharacters(
+//            in: .whitespacesAndNewlines
+//        )
+//
+//        guard let amount = Double(trimmedAmount),
+//              amount.isFinite,
+//              amount > 0 else {
+//            errorMessage = "Enter a valid category limit greater than zero."
+//            successMessage = ""
+//            return
+//        }
+        
+        if let validationError = BudgetValidator.validateCategoryBudget(categoryLimit) {
+            errorMessage = validationError
             successMessage = ""
             return
         }
+
+        let amount = Double(
+            categoryLimit.trimmingCharacters(in: .whitespacesAndNewlines)
+        )!
 
         guard let monthlyBudget = currentMonthBudget else {
             errorMessage = "Please save your monthly budget first."
@@ -304,17 +314,27 @@ final class BudgetViewModel: ObservableObject {
             return
         }
 
-        let trimmedAmount = totalBudget.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard let amount = Double(trimmedAmount),
-              amount.isFinite,
-              amount > 0 else {
-            errorMessage = "Please enter a valid budget amount greater than zero."
+//        let trimmedAmount = totalBudget.trimmingCharacters(
+//            in: .whitespacesAndNewlines
+//        )
+//
+//        guard let amount = Double(trimmedAmount),
+//              amount.isFinite,
+//              amount > 0 else {
+//            errorMessage = "Please enter a valid budget amount greater than zero."
+//            successMessage = ""
+//            return
+//        }
+        
+        if let validationError = BudgetValidator.validateMonthlyBudget(totalBudget) {
+            errorMessage = validationError
             successMessage = ""
             return
         }
+
+        let amount = Double(
+            totalBudget.trimmingCharacters(in: .whitespacesAndNewlines)
+        )!
 
         let calendar = Calendar.current
         let now = Date()
