@@ -62,10 +62,10 @@ struct SpendWiseApp: App {
                     isAppUnlocked = true
                 }
             }
+            .preferredColorScheme(.light)
         }
     }
 
     @Environment(\.scenePhase) private var scenePhase
 }
-
 

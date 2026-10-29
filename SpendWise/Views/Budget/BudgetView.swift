@@ -20,7 +20,15 @@ struct BudgetView: View {
                 VStack(spacing: 24) {
 
                     // Current Month
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        
+//                        Text("Budget")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+//                            .foregroundColor(Color.spendWiseText)
+//                        
+//                        Spacer()
+                        
                         Text("Monthly Budget")
                             .font(.headline)
                             .foregroundColor(Color.spendWiseSecondaryText)
@@ -305,8 +313,21 @@ struct BudgetView: View {
                 .padding()
             }
             .background(Color.spendWiseBackground)
-            .navigationTitle("Budget")
-            
+            //.navigationTitle("Budget")
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    Text("Budget")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.spendWiseText)
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background(Color.spendWiseBackground)
+            }
             .onAppear {
                 viewModel.refreshData()
             }

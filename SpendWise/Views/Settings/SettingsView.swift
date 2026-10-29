@@ -53,7 +53,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-
+                
                 // Account & Sync
                 Section("Account") {
 
@@ -234,21 +234,37 @@ struct SettingsView: View {
                 }
                 
                 // App Introduction
-                Section("About SpendWise") {
-                    Button {
-                        showOnboardingAgain = true
-                    } label: {
-                        Label {
-                            Text("Replay Onboarding")
-                        } icon: {
-                            Image(systemName: "book.pages")
-                                .foregroundStyle(Color.spendWiseTeal)
-                                .frame(width: 24, alignment: .leading)
-                        }
-                    }
-                }
+//                Section("About SpendWise") {
+//                    Button {
+//                        showOnboardingAgain = true
+//                    } label: {
+//                        Label {
+//                            Text("Replay Onboarding")
+//                        } icon: {
+//                            Image(systemName: "book.pages")
+//                                .foregroundStyle(Color.spendWiseTeal)
+//                                .frame(width: 24, alignment: .leading)
+//                        }
+//                    }
+//                }
                 
             }
+            
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    Text("Settings")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.spendWiseText)
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background(Color.spendWiseBackground)
+            }
+            
             .onAppear {
                 var components = DateComponents()
                 components.hour = dailyReminderHour
@@ -275,7 +291,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            .navigationTitle("Settings")
+            //.navigationTitle("Settings")
             .sheet(isPresented: $showOnboardingAgain) {
                 OnboardingView {
                     showOnboardingAgain = false

@@ -230,13 +230,19 @@ struct InsightsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-
                     // Monthly overview
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        
+//                        Text("Insights")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+                        
                         Text("Monthly Spending")
                             .font(.title2)
                             .fontWeight(.bold)
-
+                        
+                        Spacer()
+                        
                         HStack {
                             Button {
                                 changeMonth(by: -1)
@@ -275,6 +281,8 @@ struct InsightsView: View {
                             .opacity(canGoToNextMonth ? 1 : 0.35)
                             .accessibilityLabel("Next month")
                         }
+                        
+                        Spacer()
 
                         Text("Total spent")
                             .foregroundStyle(
@@ -422,10 +430,6 @@ struct InsightsView: View {
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 20))
-
-                    
-                    
-                    
 
                     // Category chart
                     VStack(alignment: .leading, spacing: 16) {
@@ -625,13 +629,28 @@ struct InsightsView: View {
                         }
                     }
                 }
-                .padding()
-                .background(Color(.secondarySystemBackground))
+                .padding(.horizontal)
+                .padding(.bottom)
+                .background(Color.spendWiseBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-
+                .contentMargins(.top, 0, for: .scrollContent)
             }
             .background(Color.spendWiseBackground)
-            .navigationTitle("Insights")
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    Text("Insights")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.spendWiseText)
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background(Color.spendWiseBackground)
+            }
             .onAppear {
                 expenseViewModel.fetchExpenses()
                 budgetViewModel.refreshData()

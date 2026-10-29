@@ -52,17 +52,19 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 24) {
 
                     // Welcome Header
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Welcome to SpendWise")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color.spendWiseText)
-
-                        Text(Date.now.formatted(
-                            .dateTime.month(.wide).year()
-                        ))
-                        .foregroundColor(Color.spendWiseSecondaryText)
-                    }
+//                    VStack(alignment: .leading, spacing: 6) {
+//                        Text("Welcome to SpendWise")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+//                            .foregroundColor(Color.spendWiseText)
+//                            .padding(.top , 10)
+//
+//                        Text(Date.now.formatted(
+//                            .dateTime.month(.wide).year()
+//                        ))
+//                        .foregroundColor(Color.spendWiseSecondaryText)
+//                        .padding(.top , 5)
+//                    }
 
                     // Monthly Spending Card
                     VStack(alignment: .leading, spacing: 16) {
@@ -460,7 +462,21 @@ struct HomeView: View {
                 .padding()
             }
             .background(Color.spendWiseBackground)
-            .navigationTitle("Home")
+            //.navigationTitle("Home")
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    Text("Welcome to SpendWise")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.spendWiseText)
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background(Color.spendWiseBackground)
+            }
             .onAppear {
                 Task {
                     await syncAndRefreshDashboard()
