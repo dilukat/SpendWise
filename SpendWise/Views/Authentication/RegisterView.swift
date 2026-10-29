@@ -4,6 +4,7 @@
 //
 //  Created by Theekshana on 2026-10-01.
 //
+
 import SwiftUI
 import FirebaseAuth
 
@@ -16,204 +17,309 @@ struct RegisterView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
-
     @State private var isLoading = false
     @State private var errorMessage = ""
 
     private let firebaseService = FirebaseService.shared
 
     var body: some View {
-
         NavigationStack {
-
             ScrollView {
+                VStack(spacing: 28) {
 
-                VStack(spacing: 24) {
+                    // MARK: - Header
+                    VStack(spacing: 14) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(Color.spendWiseTeal.opacity(0.12))
+                                .frame(width: 84, height: 84)
 
-                    VStack(spacing: 8) {
+                            Image(systemName: "wallet.bifold")
+                                .font(.system(size: 38, weight: .medium))
+                                .foregroundStyle(Color.spendWiseTeal)
+                        }
 
-                        Text("SpendWise")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(Color.spendWiseTeal)
+                        VStack(spacing: 8) {
+                            Text("SpendWise")
+                                .font(.system(size: 32, weight: .bold))
+                                .foregroundStyle(Color.spendWiseTeal)
 
-                        Text("Create your account")
-                            .font(.title3)
-                            .fontWeight(.semibold)
+                            Text("Create your account")
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(.primary)
 
-                        Text("Start managing your personal expenses")
-                            .font(.subheadline)
-                            .foregroundStyle(Color.spendWiseSecondaryText)
+                            Text("Start managing your personal expenses")
+                                .font(.subheadline)
+                                .foregroundStyle(
+                                    Color.spendWiseSecondaryText
+                                )
+                                .multilineTextAlignment(.center)
+                        }
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 24)
 
-                    VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 18) {
 
-                        TextField("Full Name", text: $fullName)
-                            .textFieldStyle(.roundedBorder)
-                            .textInputAutocapitalization(.words)
+                        // Full Name
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Full name")
+                                .font(.subheadline.weight(.semibold))
 
-                        TextField("Email", text: $email)
-                            .textFieldStyle(.roundedBorder)
-                            .keyboardType(.emailAddress)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
+                            HStack(spacing: 12) {
+                                Image(systemName: "person")
+                                    .foregroundStyle(Color.spendWiseTeal)
+                                    .frame(width: 22)
 
-                        SecureField("Password", text: $password)
-                            .textFieldStyle(.roundedBorder)
+                                TextField(
+                                    "Enter your full name",
+                                    text: $fullName
+                                )
+                                .textContentType(.name)
+                                .textInputAutocapitalization(.words)
+                                .autocorrectionDisabled()
+                                .submitLabel(.next)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 54)
+                            .background(Color.spendWiseBackground)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 14)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(
+                                        Color.spendWiseSecondaryText
+                                            .opacity(0.25),
+                                        lineWidth: 1
+                                    )
+                            }
+                        }
 
-                        SecureField("Confirm Password", text: $confirmPassword)
-                            .textFieldStyle(.roundedBorder)
-                    }
+                        // Email
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Email address")
+                                .font(.subheadline.weight(.semibold))
 
-                    if !errorMessage.isEmpty {
+                            HStack(spacing: 12) {
+                                Image(systemName: "envelope")
+                                    .foregroundStyle(Color.spendWiseTeal)
+                                    .frame(width: 22)
 
-                        Text(errorMessage)
-                            .font(.footnote)
+                                TextField(
+                                    "Enter your email",
+                                    text: $email
+                                )
+                                .keyboardType(.emailAddress)
+                                .textContentType(.emailAddress)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                                .submitLabel(.next)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 54)
+                            .background(Color.spendWiseBackground)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 14)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(
+                                        Color.spendWiseSecondaryText
+                                            .opacity(0.25),
+                                        lineWidth: 1
+                                    )
+                            }
+                        }
+
+                        // Password
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Password")
+                                .font(.subheadline.weight(.semibold))
+
+                            HStack(spacing: 12) {
+                                Image(systemName: "lock")
+                                    .foregroundStyle(Color.spendWiseTeal)
+                                    .frame(width: 22)
+
+                                SecureField(
+                                    "Create a password",
+                                    text: $password
+                                )
+                                .textContentType(.newPassword)
+                                .submitLabel(.next)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 54)
+                            .background(Color.spendWiseBackground)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 14)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(
+                                        Color.spendWiseSecondaryText
+                                            .opacity(0.25),
+                                        lineWidth: 1
+                                    )
+                            }
+                        }
+
+                        // Confirm Password
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Confirm password")
+                                .font(.subheadline.weight(.semibold))
+
+                            HStack(spacing: 12) {
+                                Image(systemName: "lock.shield")
+                                    .foregroundStyle(Color.spendWiseTeal)
+                                    .frame(width: 22)
+
+                                SecureField(
+                                    "Re-enter your password",
+                                    text: $confirmPassword
+                                )
+                                .textContentType(.newPassword)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    Task {
+                                        await registerUser()
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 54)
+                            .background(Color.spendWiseBackground)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 14)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(
+                                        Color.spendWiseSecondaryText
+                                            .opacity(0.25),
+                                        lineWidth: 1
+                                    )
+                            }
+                        }
+
+                        if !errorMessage.isEmpty {
+                            Label {
+                                Text(errorMessage)
+                                    .font(.footnote)
+                            } icon: {
+                                Image(
+                                    systemName: "exclamationmark.circle.fill"
+                                )
+                            }
                             .foregroundStyle(Color.spendWiseDanger)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                            .frame(
+                                maxWidth: .infinity,
+                                alignment: .leading
+                            )
+                            .padding(12)
+                            .background(
+                                Color.spendWiseDanger.opacity(0.08)
+                            )
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 10)
+                            )
+                        }
 
-                    HStack(alignment: .top, spacing: 8) {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "checkmark.shield")
+                                .foregroundStyle(Color.spendWiseTeal)
 
-                        Image(systemName: "checkmark.square")
-                            .foregroundStyle(Color.spendWiseTeal)
-
-                        Text("I agree to the Terms & Privacy Policy")
+                            Text(
+                                "By creating an account, you agree to our Terms & Privacy Policy."
+                            )
                             .font(.footnote)
-                            .foregroundStyle(Color.spendWiseSecondaryText)
+                            .foregroundStyle(
+                                Color.spendWiseSecondaryText
+                            )
+                            .fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
+                        }
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
+                        .padding(.top, 2)
 
-                        Spacer()
+                        Button {
+                            Task {
+                                await registerUser()
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                if isLoading {
+                                    ProgressView()
+                                        .tint(.white)
+
+                                    Text("Creating Account...")
+                                        .fontWeight(.semibold)
+                                } else {
+                                    Text("Create Account")
+                                        .fontWeight(.semibold)
+
+                                    Image(systemName: "arrow.right")
+                                        .font(.subheadline.weight(.semibold))
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 54)
+                            .foregroundStyle(.white)
+                            .background(
+                                isLoading
+                                ? Color.spendWiseSecondaryText
+                                : Color.spendWiseTeal
+                            )
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 14)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isLoading)
+                        .padding(.top, 2)
                     }
 
+                    HStack(spacing: 5) {
+                        Text("Already have an account?")
+                            .foregroundStyle(
+                                Color.spendWiseSecondaryText
+                            )
 
-                    Button {
-
-                        Task {
-                            await registerUser()
-                        }
-
-                    } label: {
-
-                        if isLoading {
-
-                            ProgressView()
-                                .tint(.white)
-
-                        } else {
-
-                            Text("Create Account")
-                                .fontWeight(.semibold)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(
-                        isLoading
-                        ? Color.spendWiseSecondaryText
-                        : Color.spendWiseTeal
-                    )
-                    .foregroundStyle(.white)
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: 12)
-                    )
-                    .disabled(isLoading)
-
-                    // Login
-
-                    Button {
-
-                        dismiss()
-
-                    } label: {
-
-                        HStack(spacing: 4) {
-
-                            Text("Already have an account?")
-                                .foregroundStyle(Color.spendWiseSecondaryText)
-
+                        Button {
+                            dismiss()
+                        } label: {
                             Text("Sign In")
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color.spendWiseTeal)
                         }
-                        .font(.footnote)
+                        .disabled(isLoading)
                     }
-                    .disabled(isLoading)
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 24)
                 }
-                .padding(24)
+                .padding(.horizontal, 24)
+                .frame(maxWidth: 480)
+                .frame(maxWidth: .infinity)
             }
-            .background(Color.spendWiseBackground)
+            .background(
+                Color.spendWiseBackground.ignoresSafeArea()
+            )
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Create Account")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 
-    // Register User
-
-//    private func registerUser() async {
-//
-//        errorMessage = ""
-//
-//        let trimmedName = fullName.trimmingCharacters(
-//            in: .whitespacesAndNewlines
-//        )
-//
-//        let trimmedEmail = email.trimmingCharacters(
-//            in: .whitespacesAndNewlines
-//        )
-//
-//        // Validate full name
-//
-//        guard !trimmedName.isEmpty else {
-//
-//            errorMessage = "Please enter your full name."
-//            return
-//        }
-//
-//        // Validate email
-//
-//        guard !trimmedEmail.isEmpty else {
-//
-//            errorMessage = "Please enter your email address."
-//            return
-//        }
-//
-//        // Validate password
-//
-//        guard !password.isEmpty else {
-//
-//            errorMessage = "Please enter a password."
-//            return
-//        }
-//
-//        // Validate password confirmation
-//
-//        guard password == confirmPassword else {
-//
-//            errorMessage = "Passwords do not match."
-//            return
-//        }
-//
-//        isLoading = true
-//
-//        do {
-//
-//            try await firebaseService.register(
-//                fullName: trimmedName,
-//                email: trimmedEmail,
-//                password: password
-//            )
-//
-//        } catch {
-//
-//            errorMessage = firebaseErrorMessage(error)
-//
-//        }
-//
-//        isLoading = false
-//    }
-    
+    @MainActor
     private func registerUser() async {
+        guard !isLoading else { return }
 
         errorMessage = ""
 
@@ -237,6 +343,7 @@ struct RegisterView: View {
         )
 
         isLoading = true
+        defer { isLoading = false }
 
         do {
             try await firebaseService.register(
@@ -244,14 +351,11 @@ struct RegisterView: View {
                 email: trimmedEmail,
                 password: password
             )
-
         } catch {
             errorMessage = FirebaseAuthErrorMapper.registrationMessage(
                 for: error
             )
         }
-
-        isLoading = false
     }
 }
 
@@ -259,4 +363,3 @@ struct RegisterView: View {
     RegisterView()
         .environmentObject(AppState())
 }
-

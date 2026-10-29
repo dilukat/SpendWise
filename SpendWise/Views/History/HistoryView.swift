@@ -256,7 +256,7 @@ struct HistoryView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(.top, 15)
                 .padding(.bottom, 12)
                 .background(Color.spendWiseBackground)
             }

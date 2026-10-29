@@ -260,7 +260,7 @@ struct SettingsView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(.top, 15)
                 .padding(.bottom, 12)
                 .background(Color.spendWiseBackground)
             }
@@ -297,19 +297,30 @@ struct SettingsView: View {
                     showOnboardingAgain = false
                 }
             }
-            .confirmationDialog(
-                "Log Out",
-                isPresented: $showLogoutConfirmation,
-                titleVisibility: .visible
-            ) {
+            
+            .alert("Log Out", isPresented: $showLogoutConfirmation) {
+                Button("Cancel", role: .cancel) {}
+
                 Button("Log Out", role: .destructive) {
                     logout()
                 }
-
-                Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Are you sure you want to log out?")
             }
+
+//            .confirmationDialog(
+//                "Log Out",
+//                isPresented: $showLogoutConfirmation,
+//                titleVisibility: .visible
+//            ) {
+//                Button("Log Out", role: .destructive) {
+//                    logout()
+//                }
+//
+//                Button("Cancel", role: .cancel) {}
+//            } message: {
+//                Text("Are you sure you want to log out?")
+//            }
         }
     }
 
