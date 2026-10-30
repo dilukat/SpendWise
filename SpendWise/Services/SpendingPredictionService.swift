@@ -35,8 +35,7 @@ final class SpendingPredictionService {
         }
     }
 
-    // MARK: - Fetch Monthly Spending History
-
+    // Fetch Monthly Spending History
     func fetchMonthlySpendingHistory(
         months: Int = 6,
         now: Date = Date()
@@ -123,8 +122,7 @@ final class SpendingPredictionService {
         }
     }
 
-    // MARK: - Predict Monthly Spending
-    
+    // Predict Monthly Spending
     func predictMonthlySpending(
         now: Date = Date()
     ) -> Double? {
@@ -262,132 +260,5 @@ final class SpendingPredictionService {
             return baselinePrediction
         }
     }
-    
-    
-    
-//    func testV3Model() {
-//        guard let model = mlModel else {
-//            print("V3 model is unavailable.")
-//            return
-//        }
-//
-//        // Same 13 rows as SpendingTestingDataV3.csv.
-//        // Each row: daysElapsed, daysInMonth, spendingSoFar,
-//        // previousMonthSpending, twoMonthsAgoSpending, actualMonthlyTotal.
-//        let testCases: [(Int64, Int64, Int64, Int64, Int64, Double)] = [
-//            (10, 30, 10000, 0, 0, 30000),
-//            (20, 30, 20000, 0, 0, 30000),
-//            (25, 31, 20000, 0, 0, 24800),
-//            (10, 30, 9000, 15000, 18000, 28000),
-//            (20, 30, 19000, 15000, 18000, 28000),
-//            (15, 31, 21000, 25000, 22000, 45000),
-//            (25, 31, 35000, 25000, 22000, 45000),
-//            (10, 30, 18000, 40000, 42000, 50000),
-//            (20, 30, 34000, 40000, 42000, 50000),
-//            (15, 31, 36000, 60000, 55000, 70000),
-//            (25, 31, 60000, 60000, 55000, 70000),
-//            (10, 30, 4000, 8000, 10000, 12000),
-//            (20, 30, 8000, 8000, 10000, 12000)
-//        ]
-//
-//        var mlAbsoluteErrors: [Double] = []
-//        var mlSquaredErrors: [Double] = []
-//        var mlMaxError: Double = 0
-//
-//        var baselineAbsoluteErrors: [Double] = []
-//        var baselineSquaredErrors: [Double] = []
-//        var baselineMaxError: Double = 0
-//
-//        print("========== V3 vs BASELINE ==========")
-//
-//        for (index, item) in testCases.enumerated() {
-//            let (days, monthDays, spent, previous, older, actual) = item
-//
-//            let baseline =
-//                Double(spent) / Double(days) * Double(monthDays)
-//
-//            let inputs: [String: MLFeatureValue] = [
-//                "daysElapsed": MLFeatureValue(int64: days),
-//                "daysInMonth": MLFeatureValue(int64: monthDays),
-//                "spendingSoFar": MLFeatureValue(int64: spent),
-//                "previousMonthSpending": MLFeatureValue(int64: previous),
-//                "twoMonthsAgoSpending": MLFeatureValue(int64: older)
-//            ]
-//
-//            do {
-//                let provider = try MLDictionaryFeatureProvider(
-//                    dictionary: inputs
-//                )
-//
-//                let prediction = try model.prediction(from: provider)
-//
-//                guard let output = prediction.featureValue(
-//                    for: "actualMonthlyTotal"
-//                ) else {
-//                    print("Test \(index + 1): missing model output")
-//                    return
-//                }
-//
-//                let predicted = output.doubleValue
-//
-//                guard predicted.isFinite else {
-//                    print("Test \(index + 1): invalid prediction")
-//                    return
-//                }
-//
-//                let mlError = predicted - actual
-//                let baselineError = baseline - actual
-//
-//                mlAbsoluteErrors.append(abs(mlError))
-//                mlSquaredErrors.append(mlError * mlError)
-//                mlMaxError = max(mlMaxError, abs(mlError))
-//
-//                baselineAbsoluteErrors.append(abs(baselineError))
-//                baselineSquaredErrors.append(baselineError * baselineError)
-//                baselineMaxError = max(
-//                    baselineMaxError,
-//                    abs(baselineError)
-//                )
-//
-//                print("""
-//                Test \(index + 1):
-//                  Actual: \(actual)
-//                  V3: \(predicted)
-//                  Baseline: \(baseline)
-//                """)
-//
-//            } catch {
-//                print(
-//                    "V3 prediction failed on test \(index + 1): " +
-//                    error.localizedDescription
-//                )
-//                return
-//            }
-//        }
-//
-//        let count = Double(testCases.count)
-//
-//        let mlMAE = mlAbsoluteErrors.reduce(0, +) / count
-//        let mlRMSE = sqrt(mlSquaredErrors.reduce(0, +) / count)
-//
-//        let baselineMAE = baselineAbsoluteErrors.reduce(0, +) / count
-//        let baselineRMSE = sqrt(
-//            baselineSquaredErrors.reduce(0, +) / count
-//        )
-//
-//        print("========== FINAL METRICS ==========")
-//        print("Test cases: \(testCases.count)")
-//        print("V3 MAE: \(mlMAE)")
-//        print("V3 RMSE: \(mlRMSE)")
-//        print("V3 maximum error: \(mlMaxError)")
-//        print("-----------------------------------")
-//        print("Baseline MAE: \(baselineMAE)")
-//        print("Baseline RMSE: \(baselineRMSE)")
-//        print("Baseline maximum error: \(baselineMaxError)")
-//        print("===================================")
-//    }
-
-
-
 }
 

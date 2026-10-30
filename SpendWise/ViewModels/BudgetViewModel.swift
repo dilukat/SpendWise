@@ -126,18 +126,6 @@ final class BudgetViewModel: ObservableObject {
 
    // Save Category Budget
     func saveCategoryBudget() {
-//        let trimmedAmount = categoryLimit.trimmingCharacters(
-//            in: .whitespacesAndNewlines
-//        )
-//
-//        guard let amount = Double(trimmedAmount),
-//              amount.isFinite,
-//              amount > 0 else {
-//            errorMessage = "Enter a valid category limit greater than zero."
-//            successMessage = ""
-//            return
-//        }
-        
         if let validationError = BudgetValidator.validateCategoryBudget(categoryLimit) {
             errorMessage = validationError
             successMessage = ""

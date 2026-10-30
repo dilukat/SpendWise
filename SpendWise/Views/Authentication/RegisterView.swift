@@ -26,8 +26,6 @@ struct RegisterView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 28) {
-
-                    // MARK: - Header
                     VStack(spacing: 14) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 24)

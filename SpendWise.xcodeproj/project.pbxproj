@@ -35,16 +35,10 @@
 			);
 			target = A95F5F6A306E329D00A935D1 /* SpendWise */;
 		};
-		CF93636030906A6100999C38 /* Exceptions for "SpendWiseTests" folder in "SpendWise" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				AuthenticationValidator.swift,
-			);
-			target = A95F5F6A306E329D00A935D1 /* SpendWise */;
-		};
 		CF9363643090757E00999C38 /* Exceptions for "SpendWise" folder in "SpendWiseTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Utilities/AuthenticationValidator.swift,
 				Utilities/ExpenseValidator.swift,
 				Utilities/FirebaseAuthErrorMapper.swift,
 			);
@@ -64,9 +58,6 @@
 		};
 		CF93634F3090657300999C38 /* SpendWiseTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				CF93636030906A6100999C38 /* Exceptions for "SpendWiseTests" folder in "SpendWise" target */,
-			);
 			path = SpendWiseTests;
 			sourceTree = "<group>";
 		};

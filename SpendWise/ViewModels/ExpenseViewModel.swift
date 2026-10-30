@@ -225,11 +225,6 @@ final class ExpenseViewModel: ObservableObject {
 
         let context = CoreDataService.shared.viewContext
         let request = Expense.fetchRequest()
-
-//        request.predicate = NSPredicate(
-//            format: "userID == %@",
-//            userID
-//        )
         
         request.predicate = NSPredicate(
             format: "userID == %@ AND isPendingDeletion == NO",

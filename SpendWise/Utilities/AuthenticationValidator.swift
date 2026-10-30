@@ -1,4 +1,4 @@
-//
+  //
 //  AuthenticationValidator.swift
 //  SpendWise
 //
